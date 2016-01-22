@@ -27,6 +27,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include <string.h>
 
 /** @addtogroup STM32F0xx_StdPeriph_Examples
   * @{
@@ -35,7 +36,13 @@
 /** @addtogroup SysTick_Example
   * @{
   */ 
-
+	
+/* Extern variables ----------------------------------------------------------*/
+extern uint8_t TxBuffer[];
+extern uint8_t RxBuffer[];
+extern uint8_t NbrOfDataToTransfer;
+extern __IO uint8_t TxCount; 
+extern __IO uint16_t RxCount;
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define LED_BLUE GPIO_Pin_8
@@ -47,9 +54,13 @@ static __IO uint32_t TimingDelay;
 
 /* Private function prototypes -----------------------------------------------*/
 void Delay(__IO uint32_t nTime);
-void Pins_Init(void);
+void LEDs_Init(void);
 void LED_On(uint16_t pin);
 void LED_Off(uint16_t pin);
+static void NVIC_Config(void);
+static void USART_Config(void);
+static void USART_Send(USART_TypeDef* USARTx, uint8_t size);
+
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -59,14 +70,17 @@ void LED_Off(uint16_t pin);
   */
 int main(void)
 {
-
-  if (SysTick_Config(SystemCoreClock / 1000))
+	
+  
+	if (SysTick_Config(SystemCoreClock / 1000))
   { 
     /* Capture error */ 
     while (1);
   }
 	
-	Pins_Init();
+	LEDs_Init();
+	NVIC_Config();
+	USART_Config();
 
   while (1)
   {
@@ -76,6 +90,9 @@ int main(void)
 		LED_On(LED_YELLOW);
 		LED_Off(LED_BLUE);
     Delay(1000);
+		
+		memcpy(TxBuffer, "AT\r\n", 4);
+		USART_Send(USART1, 4);
   }
 }
 
@@ -105,11 +122,11 @@ void TimingDelay_Decrement(void)
 }
 
 /**
-  * @brief  Initialise pins on the board.
+  * @brief  Initialise Leds on the board.
   * @param  None
   * @retval None
   */
-void Pins_Init(void)
+void LEDs_Init(void)
 {
   /* GPIOC Periph clock enable */
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOC, ENABLE);
@@ -141,6 +158,84 @@ void LED_On(uint16_t pin)
 void LED_Off(uint16_t pin)
 {
 	GPIOC->BRR |= pin;
+}
+
+/**
+  * @brief  Configures the nested vectored interrupt controller.
+  * @param  None
+  * @retval None
+  */
+static void NVIC_Config(void)
+{
+  NVIC_InitTypeDef NVIC_InitStructure;
+
+  /* Enable the USART Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+}
+
+/**
+  * @brief Configure the USART Device
+  * @param  None
+  * @retval None
+  */
+static void USART_Config(void)
+{
+  USART_InitTypeDef USART_InitStructure;
+	GPIO_InitTypeDef GPIO_InitStructure;
+	
+  /* Enable GPIO clock */
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+	
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+  
+  /* USART1 Pins configuration ************************************************/
+  /* Connect pin to Periph */
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_1); 
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_1);    
+  
+  /* Configure pins as AF pushpull */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+/* USARTx configured as follow:
+  - BaudRate = 9600 baud  
+  - Word Length = 8 Bits
+  - One Stop Bit
+  - No parity
+  - Hardware flow control disabled (RTS and CTS signals)
+  - Receive and transmit enabled
+  */
+  USART_InitStructure.USART_BaudRate = 115200;
+  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+  USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  USART_InitStructure.USART_Parity = USART_Parity_No;
+  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+  
+  USART_Init(USART1, &USART_InitStructure);
+	
+	USART_Cmd(USART1, ENABLE);
+	
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+}
+
+/**
+  * @brief  Send data to USART.
+  * @param  None
+  * @retval None
+  */
+static void USART_Send(USART_TypeDef* USARTx, uint8_t size)
+{
+		TxCount = 0;
+		NbrOfDataToTransfer = size;
+	  USART_ITConfig(USARTx, USART_IT_TXE, ENABLE);
 }
 
 #ifdef  USE_FULL_ASSERT

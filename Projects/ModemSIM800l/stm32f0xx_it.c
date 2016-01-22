@@ -40,8 +40,15 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
+#define TXBUFFERSIZE 255
+#define RXBUFFERSIZE 255
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+uint8_t TxBuffer[TXBUFFERSIZE];
+uint8_t RxBuffer[RXBUFFERSIZE];
+uint8_t NbrOfDataToTransfer = 0;
+__IO uint8_t TxCount = 0; 
+__IO uint16_t RxCount = 0;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -97,6 +104,38 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   TimingDelay_Decrement();
+}
+
+/**
+  * @brief  This function handles USART1 global interrupt request.
+  * @param  None
+  * @retval None
+  */
+
+void USART1_IRQHandler(void)
+{
+  if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+  {
+    /* Read one byte from the receive data register */
+    RxBuffer[RxCount++] = (USART_ReceiveData(USART1) & 0x7F);
+		
+		if(RxCount == RXBUFFERSIZE)
+		{
+			RxCount = 0;
+		}
+  }
+
+  if(USART_GetITStatus(USART1, USART_IT_TXE) != RESET)
+  {   
+    /* Write one byte to the transmit data register */
+    USART_SendData(USART1, TxBuffer[TxCount++]);
+
+    if(TxCount == NbrOfDataToTransfer)
+    {
+      /* Disable the USART1 Transmit interrupt */
+      USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
+    }
+  }
 }
 
 /******************************************************************************/
