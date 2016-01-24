@@ -51,6 +51,7 @@ extern __IO uint16_t RxCount;
 /* Private variables ---------------------------------------------------------*/
 GPIO_InitTypeDef GPIO_InitStructure;
 static __IO uint32_t TimingDelay;
+static unsigned short int transmitFlag = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 void Delay(__IO uint32_t nTime);
@@ -81,18 +82,24 @@ int main(void)
 	LEDs_Init();
 	NVIC_Config();
 	USART_Config();
+	
+	LED_On(LED_YELLOW);
+	LED_On(LED_BLUE);
 
   while (1)
   {
-		LED_Off(LED_YELLOW);
-		LED_On(LED_BLUE);
-		Delay(500);
-		LED_On(LED_YELLOW);
-		LED_Off(LED_BLUE);
+//		LED_Off(LED_YELLOW);
+//		LED_On(LED_BLUE);
+//		Delay(500);
+//		LED_On(LED_YELLOW);
+//		LED_Off(LED_BLUE);
     Delay(1000);
-		
-		memcpy(TxBuffer, "AT\r\n", 4);
-		USART_Send(USART1, 4);
+		if(transmitFlag)
+		{
+			transmitFlag = 0;
+			strcat((char *)TxBuffer, "\r\n");
+			USART_Send(USART1, strlen((char *)TxBuffer));
+		}
   }
 }
 
@@ -197,6 +204,7 @@ static void USART_Config(void)
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_1);    
   
   /* Configure pins as AF pushpull */
+																	// TX        RX
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;

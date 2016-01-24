@@ -29,6 +29,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx_it.h"
+#include <string.h>
 
 /** @addtogroup STM32F0xx_StdPeriph_Examples
   * @{
@@ -134,6 +135,7 @@ void USART1_IRQHandler(void)
     {
       /* Disable the USART1 Transmit interrupt */
       USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
+			memset(TxBuffer, 0, TXBUFFERSIZE);
     }
   }
 }

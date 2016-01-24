@@ -769,6 +769,11 @@
               <FileType>1</FileType>
               <FilePath>..\stm32f0xx_it.c</FilePath>
             </File>
+            <File>
+              <FileName>sim800l.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sim800l.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1739,6 +1744,11 @@
               <FileName>stm32f0xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\stm32f0xx_it.c</FilePath>
+            </File>
+            <File>
+              <FileName>sim800l.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sim800l.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2840,6 +2850,11 @@
               <FileType>1</FileType>
               <FilePath>..\stm32f0xx_it.c</FilePath>
             </File>
+            <File>
+              <FileName>sim800l.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sim800l.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3724,6 +3739,11 @@
               <FileName>stm32f0xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\stm32f0xx_it.c</FilePath>
+            </File>
+            <File>
+              <FileName>sim800l.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sim800l.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -4825,6 +4845,11 @@
               <FileType>1</FileType>
               <FilePath>..\stm32f0xx_it.c</FilePath>
             </File>
+            <File>
+              <FileName>sim800l.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sim800l.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -5709,6 +5734,11 @@
               <FileName>stm32f0xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\stm32f0xx_it.c</FilePath>
+            </File>
+            <File>
+              <FileName>sim800l.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sim800l.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -6595,6 +6625,11 @@
               <FileType>1</FileType>
               <FilePath>..\stm32f0xx_it.c</FilePath>
             </File>
+            <File>
+              <FileName>sim800l.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sim800l.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -7480,6 +7515,11 @@
               <FileType>1</FileType>
               <FilePath>..\stm32f0xx_it.c</FilePath>
             </File>
+            <File>
+              <FileName>sim800l.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sim800l.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -8364,6 +8404,11 @@
               <FileName>stm32f0xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\stm32f0xx_it.c</FilePath>
+            </File>
+            <File>
+              <FileName>sim800l.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sim800l.c</FilePath>
             </File>
           </Files>
         </Group>
