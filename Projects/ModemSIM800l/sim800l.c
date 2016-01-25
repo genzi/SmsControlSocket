@@ -1,6 +1,6 @@
 #include "sim800l.h"
 
-static int response; //powinno byc typu enum OK, ERROR, WAIT
+static Response response; //powinno byc typu enum OK, ERROR, WAIT
 
 void ModuleGSMProcess(void)
 {
@@ -24,6 +24,15 @@ void ModuleGSMProcess(void)
 			
 		case CHECK_ALIVE:
 			response = SendCommand("AT\r\n");
+		
+			if(response == RESP_OK)
+			{
+				
+			}
+			else if(response == RESP_ERROR)
+			{
+				
+			}
 		break;
 		
 		default:
@@ -47,7 +56,8 @@ void ModuleGSMEnable(void)
 	
 }
 
-int SendCommand(char *command)
+Response SendCommand(char *command)
 {
 	
+	return RESP_ERROR;
 }

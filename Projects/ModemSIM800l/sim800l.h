@@ -24,6 +24,12 @@ typedef enum {
 	SEND_SMS_TO,
 	SEND_SMS_ASNWER
 } State;
+
+typedef enum {
+	RESP_OK,
+	RESP_ERROR,
+	RESP_WAIT
+} Response;
 	 
 typedef struct {
 	State currentState;
@@ -31,12 +37,19 @@ typedef struct {
 } sim800l;
 
 sim800l moduleGSM;
+int ModuleGSMDelayCounter;
 
 void ModuleGSMInit(void);
 void ModuleGSMProcess(void);
 void ModuleGSMReset(void);
 void ModuleGSMEnable(void);
-int SendCommand(char *command);
+Response SendCommand(char *command);
+
+void ModuleGSMDelaySet(void);
+void ModuleGSMDelayDecrement(void);
+Response ModuleGSMDelayCheck(void);
+
+
 	 
 	 
 	 
