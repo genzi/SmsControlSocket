@@ -29,6 +29,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx_it.h"
+#include "sim800l.h"
 #include <string.h>
 
 /** @addtogroup STM32F0xx_StdPeriph_Examples
@@ -105,6 +106,7 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   TimingDelay_Decrement();
+	ModuleGSMDelayDecrementMs();
 }
 
 /**
@@ -119,6 +121,8 @@ void USART1_IRQHandler(void)
   {
     /* Read one byte from the receive data register */
     RxBuffer[RxCount++] = (USART_ReceiveData(USART1) & 0x7F);
+		
+		//process Unsolicited result codes !!!!!!!!!!!!!!!!!!!!!!!!!1
 		
 		if(RxCount == RXBUFFERSIZE)
 		{

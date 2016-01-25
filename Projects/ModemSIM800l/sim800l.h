@@ -8,8 +8,13 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx.h"
+#include <string.h>
+	 
+extern void USART_Send(USART_TypeDef* USARTx, uint8_t size);
+extern uint8_t TxBuffer[];	 
 	 
 typedef enum {
+	WAIT,
 	RESETING,
 	STARTING,
 	CHECK_ALIVE,
@@ -33,11 +38,10 @@ typedef enum {
 	 
 typedef struct {
 	State currentState;
-	
+	State nextState;
 } sim800l;
 
-sim800l moduleGSM;
-int ModuleGSMDelayCounter;
+extern sim800l moduleGSM;
 
 void ModuleGSMInit(void);
 void ModuleGSMProcess(void);
@@ -45,9 +49,9 @@ void ModuleGSMReset(void);
 void ModuleGSMEnable(void);
 Response SendCommand(char *command);
 
-void ModuleGSMDelaySet(void);
-void ModuleGSMDelayDecrement(void);
-Response ModuleGSMDelayCheck(void);
+void ModuleGSMDelaySetMs(int msDelay);
+void ModuleGSMDelayDecrementMs(void);
+Response ModuleGSMDelayCheckMs(void);
 
 
 	 

@@ -27,6 +27,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "sim800l.h"
 #include <string.h>
 
 /** @addtogroup STM32F0xx_StdPeriph_Examples
@@ -58,9 +59,11 @@ void Delay(__IO uint32_t nTime);
 void LEDs_Init(void);
 void LED_On(uint16_t pin);
 void LED_Off(uint16_t pin);
+void StatusLEDprocess(void);
 static void NVIC_Config(void);
 static void USART_Config(void);
-static void USART_Send(USART_TypeDef* USARTx, uint8_t size);
+
+void USART_Send(USART_TypeDef* USARTx, uint8_t size);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -83,8 +86,10 @@ int main(void)
 	NVIC_Config();
 	USART_Config();
 	
-	LED_On(LED_YELLOW);
-	LED_On(LED_BLUE);
+	LED_Off(LED_YELLOW);
+	LED_Off(LED_BLUE);
+	
+	ModuleGSMInit();
 
   while (1)
   {
@@ -93,9 +98,13 @@ int main(void)
 //		Delay(500);
 //		LED_On(LED_YELLOW);
 //		LED_Off(LED_BLUE);
-    Delay(1000);
+		
+		ModuleGSMProcess();
+		StatusLEDprocess();
+    
 		if(transmitFlag)
 		{
+			Delay(1000);
 			transmitFlag = 0;
 			strcat((char *)TxBuffer, "\r\n");
 			USART_Send(USART1, strlen((char *)TxBuffer));
@@ -165,6 +174,24 @@ void LED_On(uint16_t pin)
 void LED_Off(uint16_t pin)
 {
 	GPIOC->BRR |= pin;
+}
+
+/**
+  * @brief  Status LES process
+  * @param  None
+  * @retval None
+  */
+void StatusLEDprocess(void)
+{
+	static int counter = 0;
+	
+	counter = counter > 500000 ? 0 : counter+1;
+	
+	if(counter < 10000) {
+		LED_On(LED_BLUE);
+	} else {
+		LED_Off(LED_BLUE);
+	}
 }
 
 /**
@@ -239,7 +266,7 @@ static void USART_Config(void)
   * @param  None
   * @retval None
   */
-static void USART_Send(USART_TypeDef* USARTx, uint8_t size)
+void USART_Send(USART_TypeDef* USARTx, uint8_t size)
 {
 		TxCount = 0;
 		NbrOfDataToTransfer = size;
