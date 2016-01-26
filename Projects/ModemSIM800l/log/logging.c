@@ -17,3 +17,7 @@ void LogGlobalOn(struct sLogStruct* logData) {
 void LogGlobalOff(struct sLogStruct* logData) {
 	logData->logOn = FALSE;
 }
+
+void LogSetOutputLevel(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel level) {
+	logData->outputLevel[sys] = level;
+}

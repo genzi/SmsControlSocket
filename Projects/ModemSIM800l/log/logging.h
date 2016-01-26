@@ -18,7 +18,7 @@ typedef enum {
 	TRUE
 } tBoolean;
 
-enum eLogLevel {eNoLogging, eLowLogging, eMediumLogging, eHighLogging};
+enum eLogLevel {eNoLogging, eWarningLogging, eErrorLogging, eFatalErrorLogging};
 
 #define NUM_LOG_SUBSYSTEMS 2
 enum eLogSubSystem {eSubSystemSIM800L, eSubSystemGPIO};
@@ -31,9 +31,9 @@ enum eLogLevel outputLevel[NUM_LOG_SUBSYSTEMS];
 static struct sLogStruct gLogData;
 	 
 struct sLogStruct* LogInit(void);
-void Log(enum eLogSubSystem sys, enum eLogLevel level, char *msg);
-void LogWithNum(enum eLogSubSystem sys, enum eLogLevel level, char *msg, int number);
-void LogSetOutputLevel(enum eLogSubSystem sys, enum eLogLevel level);
+void Log(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel level, char *msg);
+void LogWithNum(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel level, char *msg, int number);
+void LogSetOutputLevel(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel level);
 void LogGlobalOn(struct sLogStruct* logData);
 void LogGlobalOff(struct sLogStruct* logData);
 void LogVersion(struct sFirmwareVersion *v);
