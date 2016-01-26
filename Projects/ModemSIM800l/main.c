@@ -28,6 +28,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "sim800l.h"
+#include "log\logging.h"
 #include <string.h>
 
 /** @addtogroup STM32F0xx_StdPeriph_Examples
@@ -54,6 +55,8 @@ GPIO_InitTypeDef GPIO_InitStructure;
 static __IO uint32_t TimingDelay;
 static unsigned short int transmitFlag = 0;
 
+struct sLogStruct* logData;
+
 /* Private function prototypes -----------------------------------------------*/
 void Delay(__IO uint32_t nTime);
 void LEDs_Init(void);
@@ -74,13 +77,25 @@ void USART_Send(USART_TypeDef* USARTx, uint8_t size);
   */
 int main(void)
 {
+	struct sFirmwareVersion version;
+	logData = LogInit();
 	
+	version.majorVerion = 0;
+	version.minorVersion = 1;
+	version.buildIndicator = 69;
+	
+	LogSetOutputLevel(logData, eSubSystemSYSTEM, eInfoLogging);
+	LogSetOutputLevel(logData, eSubSystemSIM800L, eInfoLogging);
+	LogVersion(logData, &version);
   
 	if (SysTick_Config(SystemCoreClock / 1000))
   { 
-    /* Capture error */ 
+    /* Capture error */
+		Log(logData, eSubSystemSYSTEM, eFatalErrorLogging, "SysTick Config ERROR");
     while (1);
   }
+	
+	Log(logData, eSubSystemSYSTEM, eInfoLogging, "SysTick initialized");
 	
 	LEDs_Init();
 	NVIC_Config();
@@ -90,6 +105,8 @@ int main(void)
 	LED_Off(LED_BLUE);
 	
 	ModuleGSMInit();
+	
+	Log(logData, eSubSystemSYSTEM, eInfoLogging, "Hardware initialized");
 
   while (1)
   {
@@ -108,6 +125,8 @@ int main(void)
 			transmitFlag = 0;
 			strcat((char *)TxBuffer, "\r\n");
 			USART_Send(USART1, strlen((char *)TxBuffer));
+			
+			Log(logData, eSubSystemSIM800L, eInfoLogging, "Command sended");
 		}
   }
 }
