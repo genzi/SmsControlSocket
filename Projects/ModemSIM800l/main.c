@@ -45,6 +45,7 @@ extern uint8_t RxBuffer[];
 extern uint8_t NbrOfDataToTransfer;
 extern __IO uint8_t TxCount; 
 extern __IO uint16_t RxCount;
+extern __IO uint32_t SysTickCounter;
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define LED_BLUE GPIO_Pin_8
@@ -76,7 +77,7 @@ void USART_Send(USART_TypeDef* USARTx, uint8_t size);
 int main(void)
 {
 	struct sFirmwareVersion version;
-	gLogData = LogInit();
+	gLogData = LogInit(&SysTickCounter);
 	
 	version.majorVerion = 0;
 	version.minorVersion = 1;

@@ -29,18 +29,18 @@ enum eLogSubSystem {eSubSystemSYSTEM, eSubSystemSIM800L, eSubSystemGPIO};
 struct sLogStruct{
 tBoolean logOn;
 enum eLogLevel outputLevel[NUM_LOG_SUBSYSTEMS];
+volatile uint32_t *pTimestamp;
 };
 
-static struct sLogStruct *gLogData;
+extern struct sLogStruct *gLogData;
 	 
-struct sLogStruct* LogInit(void);
+struct sLogStruct* LogInit(volatile uint32_t *SysTimestamp);
 void Log(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel level, char *msg);
 void LogWithNum(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel level, char *msg, int num);
 void LogSetOutputLevel(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel level);
 void LogGlobalOn(struct sLogStruct* logData);
 void LogGlobalOff(struct sLogStruct* logData);
 void LogVersion(struct sLogStruct* logData, struct sFirmwareVersion *v);
-
 	 
 #ifdef __cplusplus
 }

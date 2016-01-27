@@ -3,10 +3,16 @@
 #include <stdio.h>
 
 char LogBuffer[NUMBER_OF_LOGS][LOG_STRING_LENGTH];
+struct sLogStruct *gLogData;
 
-struct sLogStruct* LogInit(){
+struct sLogStruct* LogInit(volatile uint32_t *SysTimestamp){
 	int i;
-	struct sLogStruct *logData = malloc(sizeof(*logData));
+	
+	if(gLogData != NULL) {
+		return gLogData;
+	}
+	struct sLogStruct *logData = (struct sLogStruct *)malloc(sizeof(struct sLogStruct));
+	logData->pTimestamp = SysTimestamp;
 	logData->logOn = TRUE;
 	for (i=0; i < NUM_LOG_SUBSYSTEMS; i++) {
 		logData->outputLevel[i] = eNoLogging;
@@ -27,8 +33,15 @@ void LogSetOutputLevel(struct sLogStruct* logData, enum eLogSubSystem sys, enum 
 
 void Log(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel level, char *msg) {
 	static int index = 0;
+	uint32_t timestamp;
+	
+	if(logData->logOn == FALSE) {
+		return;
+	}
+	
+	timestamp = logData->pTimestamp == NULL ? 0 : *logData->pTimestamp;
 	if(level >= logData->outputLevel[sys]) {
-		snprintf(&LogBuffer[index++%NUMBER_OF_LOGS][0], LOG_STRING_LENGTH, "[%d]<%d>%s", sys, level, msg);
+		snprintf(&LogBuffer[index++%NUMBER_OF_LOGS][0], LOG_STRING_LENGTH, "{%Xh}[%d]<%d>%s", timestamp, sys, level, msg);
 	}
 }
 
@@ -45,3 +58,4 @@ void LogVersion(struct sLogStruct* logData, struct sFirmwareVersion *v) {
 	snprintf(version, LOG_STRING_LENGTH, "SoftVer%d.%d.%d", v->majorVerion, v->minorVersion, v->buildIndicator);
 	Log(logData, eSubSystemSYSTEM, eInfoLogging, version);
 }
+

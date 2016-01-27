@@ -46,6 +46,7 @@
 #define RXBUFFERSIZE 255
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+__IO uint32_t SysTickCounter;
 uint8_t TxBuffer[TXBUFFERSIZE];
 uint8_t RxBuffer[RXBUFFERSIZE];
 uint8_t NbrOfDataToTransfer = 0;
@@ -105,7 +106,9 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
-  TimingDelay_Decrement();
+  SysTickCounter++;
+	
+	TimingDelay_Decrement();
 	ModuleGSMDelayDecrementMs();
 }
 
