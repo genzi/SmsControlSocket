@@ -8,6 +8,9 @@
  extern "C" {
 #endif
 	 
+#define LOG_STRING_LENGTH 40
+#define NUMBER_OF_LOGS 10
+	 
 struct sFirmwareVersion{
 	uint8_t majorVerion;
 	uint8_t minorVersion;
@@ -28,10 +31,11 @@ tBoolean logOn;
 enum eLogLevel outputLevel[NUM_LOG_SUBSYSTEMS];
 };
 
-static struct sLogStruct gLogData;
+static struct sLogStruct *gLogData;
 	 
 struct sLogStruct* LogInit(void);
 void Log(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel level, char *msg);
+void LogWithNum(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel level, char *msg, int num);
 void LogSetOutputLevel(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel level);
 void LogGlobalOn(struct sLogStruct* logData);
 void LogGlobalOff(struct sLogStruct* logData);

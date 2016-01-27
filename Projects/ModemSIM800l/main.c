@@ -55,8 +55,6 @@ GPIO_InitTypeDef GPIO_InitStructure;
 static __IO uint32_t TimingDelay;
 static unsigned short int transmitFlag = 0;
 
-struct sLogStruct* logData;
-
 /* Private function prototypes -----------------------------------------------*/
 void Delay(__IO uint32_t nTime);
 void LEDs_Init(void);
@@ -78,24 +76,24 @@ void USART_Send(USART_TypeDef* USARTx, uint8_t size);
 int main(void)
 {
 	struct sFirmwareVersion version;
-	logData = LogInit();
+	gLogData = LogInit();
 	
 	version.majorVerion = 0;
 	version.minorVersion = 1;
 	version.buildIndicator = 69;
 	
-	LogSetOutputLevel(logData, eSubSystemSYSTEM, eInfoLogging);
-	LogSetOutputLevel(logData, eSubSystemSIM800L, eInfoLogging);
-	LogVersion(logData, &version);
+	LogSetOutputLevel(gLogData, eSubSystemSYSTEM, eInfoLogging);
+	LogSetOutputLevel(gLogData, eSubSystemSIM800L, eInfoLogging);
+	LogVersion(gLogData, &version);
   
 	if (SysTick_Config(SystemCoreClock / 1000))
   { 
     /* Capture error */
-		Log(logData, eSubSystemSYSTEM, eFatalErrorLogging, "SysTick Config ERROR");
+		Log(gLogData, eSubSystemSYSTEM, eFatalErrorLogging, "SysTick Config ERROR");
     while (1);
   }
 	
-	Log(logData, eSubSystemSYSTEM, eInfoLogging, "SysTick initialized");
+	Log(gLogData, eSubSystemSYSTEM, eInfoLogging, "SysTick initialized");
 	
 	LEDs_Init();
 	NVIC_Config();
@@ -106,7 +104,7 @@ int main(void)
 	
 	ModuleGSMInit();
 	
-	Log(logData, eSubSystemSYSTEM, eInfoLogging, "Hardware initialized");
+	Log(gLogData, eSubSystemSYSTEM, eInfoLogging, "Hardware initialized");
 
   while (1)
   {
@@ -126,7 +124,7 @@ int main(void)
 			strcat((char *)TxBuffer, "\r\n");
 			USART_Send(USART1, strlen((char *)TxBuffer));
 			
-			Log(logData, eSubSystemSIM800L, eInfoLogging, "Command sended");
+			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Command sended");
 		}
   }
 }

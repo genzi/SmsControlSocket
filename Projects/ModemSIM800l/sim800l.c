@@ -1,4 +1,6 @@
 #include "sim800l.h"
+#include "log\\logging.h"
+
 
 sim800l moduleGSM;
 
@@ -10,6 +12,7 @@ static void ModuleGSMSetWaitForNextState(int msDelay, State nextSate)
 	ModuleGSMDelaySetMs(msDelay);
 	moduleGSM.nextState = nextSate;
 	moduleGSM.currentState = WAIT;
+	Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Sim800l goes to WAIT");
 }
 
 void ModuleGSMProcess(void)
@@ -20,15 +23,18 @@ void ModuleGSMProcess(void)
 			if(ModuleGSMDelayCheckMs() != RESP_WAIT)
 			{
 				moduleGSM.currentState = moduleGSM.nextState;
+				LogWithNum(gLogData, eSubSystemSIM800L, eInfoLogging, "Sim800l goes to State: ", moduleGSM.nextState);
 			}
 		break;
 		
 		case RESETING:
+			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Sim800l RESETING");
 			ModuleGSMReset();
 			ModuleGSMSetWaitForNextState(500, STARTING);
 		break;
 		
 		case STARTING:
+			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Sim800l STARTING");
 			ModuleGSMEnable();
 			ModuleGSMSetWaitForNextState(3000, CHECK_ALIVE);
 		break;
@@ -44,6 +50,7 @@ void ModuleGSMProcess(void)
 			{
 				moduleGSM.currentState = READY;
 			}
+			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Sim800l goes to READY");
 		break;
 			
 		case READY:

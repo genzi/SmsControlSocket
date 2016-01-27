@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-char LogBuffer[10][30];
+char LogBuffer[NUMBER_OF_LOGS][LOG_STRING_LENGTH];
 
 struct sLogStruct* LogInit(){
 	int i;
@@ -28,13 +28,20 @@ void LogSetOutputLevel(struct sLogStruct* logData, enum eLogSubSystem sys, enum 
 void Log(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel level, char *msg) {
 	static int index = 0;
 	if(level >= logData->outputLevel[sys]) {
-		snprintf(&LogBuffer[index++%10][0], 30, "[%d]<%d>%s", sys, level, msg);
+		snprintf(&LogBuffer[index++%NUMBER_OF_LOGS][0], LOG_STRING_LENGTH, "[%d]<%d>%s", sys, level, msg);
 	}
 }
 
-void LogVersion(struct sLogStruct* logData, struct sFirmwareVersion *v) {
-	char version[20];
+void LogWithNum(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel level, char *msg, int num) {
+	char tempString[LOG_STRING_LENGTH];
 	
-	snprintf(version, 20, "SoftVer%d.%d.%d", v->majorVerion, v->minorVersion, v->buildIndicator);
+	snprintf(tempString, LOG_STRING_LENGTH, "%s%d", msg, num);
+	Log(logData, sys, level, tempString);	
+}
+
+void LogVersion(struct sLogStruct* logData, struct sFirmwareVersion *v) {
+	char version[LOG_STRING_LENGTH];
+	
+	snprintf(version, LOG_STRING_LENGTH, "SoftVer%d.%d.%d", v->majorVerion, v->minorVersion, v->buildIndicator);
 	Log(logData, eSubSystemSYSTEM, eInfoLogging, version);
 }
