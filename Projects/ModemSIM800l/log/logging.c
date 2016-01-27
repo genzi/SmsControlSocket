@@ -13,7 +13,7 @@ struct sLogStruct* LogInit(volatile uint32_t *SysTimestamp){
 	}
 	struct sLogStruct *logData = (struct sLogStruct *)malloc(sizeof(struct sLogStruct));
 	logData->pTimestamp = SysTimestamp;
-	logData->logOn = TRUE;
+	logData->logOn = true;
 	for (i=0; i < NUM_LOG_SUBSYSTEMS; i++) {
 		logData->outputLevel[i] = eNoLogging;
 	}
@@ -21,10 +21,10 @@ struct sLogStruct* LogInit(volatile uint32_t *SysTimestamp){
 }
 
 void LogGlobalOn(struct sLogStruct* logData) {
-	logData->logOn = TRUE;
+	logData->logOn = true;
 }
 void LogGlobalOff(struct sLogStruct* logData) {
-	logData->logOn = FALSE;
+	logData->logOn = false;
 }
 
 void LogSetOutputLevel(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel level) {
@@ -35,7 +35,7 @@ void Log(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel leve
 	static int index = 0;
 	uint32_t timestamp;
 	
-	if(logData->logOn == FALSE) {
+	if(logData->logOn == false) {
 		return;
 	}
 	

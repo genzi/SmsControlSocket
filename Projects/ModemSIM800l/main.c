@@ -29,6 +29,7 @@
 #include "main.h"
 #include "sim800l.h"
 #include "log\logging.h"
+#include "timers_mngr\timers_mngr.h"
 #include <string.h>
 
 /** @addtogroup STM32F0xx_StdPeriph_Examples
@@ -61,13 +62,26 @@ void Delay(__IO uint32_t nTime);
 void LEDs_Init(void);
 void LED_On(uint16_t pin);
 void LED_Off(uint16_t pin);
-void StatusLEDprocess(void);
 static void NVIC_Config(void);
 static void USART_Config(void);
 
 void USART_Send(USART_TypeDef* USARTx, uint8_t size);
 
 /* Private functions ---------------------------------------------------------*/
+
+void StatusLEDon(void *par)
+{
+	Log(gLogData, eSubSystemSYSTEM, eInfoLogging, "Status LED on");
+	LED_On(LED_BLUE);
+	TimersMngrTimerStart(1);
+}
+
+void StatusLEDoff(void *par)
+{
+	Log(gLogData, eSubSystemSYSTEM, eInfoLogging, "Status LED off");
+	LED_Off(LED_BLUE);
+}
+
 
 /**
   * @brief   Main program
@@ -77,6 +91,8 @@ void USART_Send(USART_TypeDef* USARTx, uint8_t size);
 int main(void)
 {
 	struct sFirmwareVersion version;
+	struct Timer timerInit;
+		
 	gLogData = LogInit(&SysTickCounter);
 	
 	version.majorVerion = 0;
@@ -86,6 +102,18 @@ int main(void)
 	LogSetOutputLevel(gLogData, eSubSystemSYSTEM, eInfoLogging);
 	LogSetOutputLevel(gLogData, eSubSystemSIM800L, eInfoLogging);
 	LogVersion(gLogData, &version);
+	
+	TimersMngrInit(2);
+	
+	timerInit.callback = StatusLEDon;
+	timerInit.reload = timerInit.counter = 2500;
+	timerInit.repeated = true;
+	TimersMngrConfigTimer(0, timerInit);
+	
+	timerInit.callback = StatusLEDoff;
+	timerInit.reload = timerInit.counter = 100;
+	timerInit.repeated = false;
+	TimersMngrConfigTimer(1, timerInit);
   
 	if (SysTick_Config(SystemCoreClock / 1000))
   { 
@@ -106,6 +134,8 @@ int main(void)
 	ModuleGSMInit();
 	
 	Log(gLogData, eSubSystemSYSTEM, eInfoLogging, "Hardware initialized");
+	
+	TimersMngrTimerStart(0);
 
   while (1)
   {
@@ -116,7 +146,7 @@ int main(void)
 //		LED_Off(LED_BLUE);
 		
 		ModuleGSMProcess();
-		StatusLEDprocess();
+		TimersMngrProcess();
     
 		if(transmitFlag)
 		{
@@ -192,24 +222,6 @@ void LED_On(uint16_t pin)
 void LED_Off(uint16_t pin)
 {
 	GPIOC->BRR |= pin;
-}
-
-/**
-  * @brief  Status LES process
-  * @param  None
-  * @retval None
-  */
-void StatusLEDprocess(void)
-{
-	static int counter = 0;
-	
-	counter = counter > 500000 ? 0 : counter+1;
-	
-	if(counter < 10000) {
-		LED_On(LED_BLUE);
-	} else {
-		LED_Off(LED_BLUE);
-	}
 }
 
 /**

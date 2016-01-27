@@ -30,6 +30,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx_it.h"
 #include "sim800l.h"
+#include "timers_mngr\timers_mngr.h"
 #include <string.h>
 
 /** @addtogroup STM32F0xx_StdPeriph_Examples
@@ -110,6 +111,7 @@ void SysTick_Handler(void)
 	
 	TimingDelay_Decrement();
 	ModuleGSMDelayDecrementMs();
+	TimersMngrDecrementCounters();
 }
 
 /**

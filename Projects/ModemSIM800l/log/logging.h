@@ -3,6 +3,7 @@
 #define __LOGGING_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
  extern "C" {
@@ -17,18 +18,13 @@ struct sFirmwareVersion{
 	uint16_t buildIndicator;
 };
 
-typedef enum {
-	FALSE,
-	TRUE
-} tBoolean;
-
 enum eLogLevel {eInfoLogging, eWarningLogging, eErrorLogging, eFatalErrorLogging, eNoLogging};
 
 #define NUM_LOG_SUBSYSTEMS 3
 enum eLogSubSystem {eSubSystemSYSTEM, eSubSystemSIM800L, eSubSystemGPIO};
 
 struct sLogStruct{
-tBoolean logOn;
+bool logOn;
 enum eLogLevel outputLevel[NUM_LOG_SUBSYSTEMS];
 volatile uint32_t *pTimestamp;
 };
