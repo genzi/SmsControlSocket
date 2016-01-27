@@ -23,7 +23,7 @@ void ModuleGSMProcess(void)
 			if(ModuleGSMDelayCheckMs() != RESP_WAIT)
 			{
 				moduleGSM.currentState = moduleGSM.nextState;
-				LogWithNum(gLogData, eSubSystemSIM800L, eInfoLogging, "Sim800l goes to State: ", moduleGSM.nextState);
+				LogWithNum(gLogData, eSubSystemSIM800L, eInfoLogging, "Sim800l goes to State: %d", moduleGSM.nextState);
 			}
 		break;
 		

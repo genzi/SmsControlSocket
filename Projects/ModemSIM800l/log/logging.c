@@ -35,7 +35,7 @@ void Log(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel leve
 void LogWithNum(struct sLogStruct* logData, enum eLogSubSystem sys, enum eLogLevel level, char *msg, int num) {
 	char tempString[LOG_STRING_LENGTH];
 	
-	snprintf(tempString, LOG_STRING_LENGTH, "%s%d", msg, num);
+	snprintf(tempString, LOG_STRING_LENGTH, msg, num);
 	Log(logData, sys, level, tempString);	
 }
 
