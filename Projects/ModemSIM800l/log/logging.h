@@ -16,6 +16,7 @@ struct sFirmwareVersion{
 	uint8_t minorVersion;
 	uint16_t buildIndicator;
 };
+
 typedef enum {
 	FALSE,
 	TRUE

@@ -1028,6 +1028,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>timers_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>timers_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\timers_mngr\timers_mngr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -2190,6 +2200,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>timers_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>timers_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\timers_mngr\timers_mngr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -3114,6 +3134,16 @@
               <FileName>logging.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\log\logging.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>timers_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>timers_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\timers_mngr\timers_mngr.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -4279,6 +4309,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>timers_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>timers_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\timers_mngr\timers_mngr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -5203,6 +5243,16 @@
               <FileName>logging.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\log\logging.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>timers_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>timers_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\timers_mngr\timers_mngr.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -6133,6 +6183,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>timers_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>timers_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\timers_mngr\timers_mngr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -7057,6 +7117,16 @@
               <FileName>logging.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\log\logging.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>timers_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>timers_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\timers_mngr\timers_mngr.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -7987,6 +8057,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>timers_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>timers_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\timers_mngr\timers_mngr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -8911,6 +8991,16 @@
               <FileName>logging.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\log\logging.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>timers_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>timers_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\timers_mngr\timers_mngr.c</FilePath>
             </File>
           </Files>
         </Group>
