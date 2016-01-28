@@ -14,10 +14,10 @@ extern void USART_Send(USART_TypeDef* USARTx, uint8_t size);
 extern uint8_t TxBuffer[];	 
 	 
 typedef enum {
-	WAIT,
 	RESETING,
 	STARTING,
-	CHECK_ALIVE,
+	AT,
+	AT_RESPONSE,
 	CHECK_PIN,
 	WRITE_PIN,
 	CHECK_SMS_MODE,
@@ -27,7 +27,9 @@ typedef enum {
 	CHECK_NEW_SMS,
 	READ_NEW_SMS,
 	SEND_SMS_TO,
-	SEND_SMS_ASNWER
+	SEND_SMS_ASNWER,
+	DELAY,
+	WAIT_FOR_RESPONSE
 } State;
 
 typedef enum {

@@ -71,14 +71,12 @@ void USART_Send(USART_TypeDef* USARTx, uint8_t size);
 
 void StatusLEDon(void *par)
 {
-	Log(gLogData, eSubSystemSYSTEM, eInfoLogging, "Status LED on");
 	LED_On(LED_BLUE);
 	TimersMngrTimerStart(1);
 }
 
 void StatusLEDoff(void *par)
 {
-	Log(gLogData, eSubSystemSYSTEM, eInfoLogging, "Status LED off");
 	LED_Off(LED_BLUE);
 }
 
@@ -106,7 +104,7 @@ int main(void)
 	TimersMngrInit(2);
 	
 	timerInit.callback = StatusLEDon;
-	timerInit.reload = timerInit.counter = 2500;
+	timerInit.reload = timerInit.counter = 2000;
 	timerInit.repeated = true;
 	TimersMngrConfigTimer(0, timerInit);
 	
@@ -150,7 +148,7 @@ int main(void)
     
 		if(transmitFlag)
 		{
-			Delay(1000);
+			Delay(100);
 			transmitFlag = 0;
 			strcat((char *)TxBuffer, "\r\n");
 			USART_Send(USART1, strlen((char *)TxBuffer));

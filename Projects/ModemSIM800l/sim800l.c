@@ -4,53 +4,65 @@
 
 sim800l moduleGSM;
 
-static Response response; //powinno byc typu enum OK, ERROR, WAIT
+static Response response; 
 static volatile int ModuleGSMDelayCounter;
 
-static void ModuleGSMSetWaitForNextState(int msDelay, State nextSate)
+static void ModuleGSMSetDelayToNextState(int msDelay, State nextSate)
 {
 	ModuleGSMDelaySetMs(msDelay);
 	moduleGSM.nextState = nextSate;
-	moduleGSM.currentState = WAIT;
-	Log(gLogData, eSubSystemSIM800L, eInfoLogging, "goes to WAIT");
+	moduleGSM.currentState = DELAY;
+	Log(gLogData, eSubSystemSIM800L, eInfoLogging, "goes to DELAY");
+}
+
+static void ModuleGSMWaitForResponse(int msDelay, State nextSate)
+{
+	ModuleGSMDelaySetMs(msDelay);
+	moduleGSM.nextState = nextSate;
+	moduleGSM.currentState = WAIT_FOR_RESPONSE;
+	Log(gLogData, eSubSystemSIM800L, eInfoLogging, "goes to WAIT_FOR_RESPONSE");
 }
 
 void ModuleGSMProcess(void)
 {
 	switch(moduleGSM.currentState)
 	{
-		case WAIT:
+		case DELAY:
+		case WAIT_FOR_RESPONSE:
 			if(ModuleGSMDelayCheckMs() != RESP_WAIT)
 			{
 				moduleGSM.currentState = moduleGSM.nextState;
 				LogWithNum(gLogData, eSubSystemSIM800L, eInfoLogging, "goes to State: %d", moduleGSM.nextState);
 			}
 		break;
-		
+			
 		case RESETING:
 			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "RESETING");
 			ModuleGSMReset();
-			ModuleGSMSetWaitForNextState(500, STARTING);
+			ModuleGSMSetDelayToNextState(500, STARTING);
 		break;
 		
 		case STARTING:
 			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "STARTING");
 			ModuleGSMEnable();
-			ModuleGSMSetWaitForNextState(3000, CHECK_ALIVE);
+			ModuleGSMSetDelayToNextState(3000, AT);
 		break;
 			
-		case CHECK_ALIVE:
-			response = SendCommand("AT\r\n");
-		
-			if(response == RESP_OK)
-			{
-				moduleGSM.currentState = READY;
-			}
-			else if(response == RESP_ERROR)
-			{
-				moduleGSM.currentState = READY;
-			}
+		case AT:
+			/*TODO
+			-	dodac stan WAIT_FOR_RESPONSE: przed przejsciem do tego stanu ustawic flage czekania na odpowiedz i timeout
+				inny dla kazdego zapytania. Jesli dostaniemy na uarcie prawidlowa odpiwiedz (badanie \r\n albo OK\r\n) to 
+				zmieniamy flage i w WAIT_FOR_RESPONSE decydujemy co zrobic dalej (moze skoczyc do innego stanu lub od razu jakas akcja)
+			- do wysylania i zapisywania odpowiedzi uzyc kolejki
+			*/
+			ModuleGSMWaitForResponse(50, AT_RESPONSE);
+			SendCommand("AT\r\n");
+			
 			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "goes to READY");
+		break;
+		
+		case AT_RESPONSE:
+			
 		break;
 			
 		case READY:
@@ -58,7 +70,8 @@ void ModuleGSMProcess(void)
 		break;
 		
 		default:
-			break;
+			LogWithNum(gLogData, eSubSystemSIM800L, eErrorLogging, "UNDEFINED state:%d", moduleGSM.currentState);
+		break;
 	}
 }
 
@@ -101,10 +114,16 @@ Response SendCommand(char *command)
 
 /**
 	Delay functions
+		void ModuleGSMDelayCancel(int msDelay);
 		void ModuleGSMDelaySetMs(void);
 		void ModuleGSMDelayDecrementMs(void);
 		Response ModuleGSMDelayCheckMs(void);
 */
+
+void ModuleGSMDelayCancel(int msDelay)
+{
+	ModuleGSMDelayCounter = 0;
+}
 
 void ModuleGSMDelaySetMs(int msDelay)
 {
