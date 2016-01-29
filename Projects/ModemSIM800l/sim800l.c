@@ -2,6 +2,8 @@
 #include "log\\logging.h"
 #include "timers_mngr\timers_mngr.h"
 
+#define DELAY_BTW_CMDS 100
+
 /* Public variables ----------------------------------------------------------*/
 sim800l moduleGSM;
 Queue *gQueueSimUsart;
@@ -68,7 +70,7 @@ void ModuleGSMProcess(void)
 			
 		case AT:
 			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Sending AT");
-			ModuleGSMWaitForResponse(50, AT_RESPONSE);
+			ModuleGSMWaitForResponse(100, AT_RESPONSE);
 			SendCommand("AT\r\n");
 		break;
 		
@@ -76,15 +78,15 @@ void ModuleGSMProcess(void)
 			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
 				if(ModuleGSMResponseOK()) {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "AT_RESPONSE OK");
-					moduleGSM.currentState = READY;				
+					ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, READY);				
 					StatusLEDBlinkRate(MODULE_OK);
 				} else {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "AT_RESPONSE ERROR");
-					moduleGSM.currentState = READY;					
+					ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, READY);					
 				}
 			} else {
 				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "AT_RESPONSE TIMEOUT");
-				moduleGSM.currentState = IDLE;				
+				ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, IDLE);				
 			}					
 		break;
 			
