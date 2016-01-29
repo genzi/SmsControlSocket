@@ -116,6 +116,11 @@ void SysTick_Handler(void)
 	TimersMngrDecrementCounters();
 }
 
+static void ClearRxBufferAndCounter(void) {
+	memset(RxBuffer, 0, RxCount);
+	RxCount = 0;
+}
+
 /**
   * @brief  This function handles USART1 global interrupt request.
   * @param  None
@@ -130,15 +135,28 @@ void USART1_IRQHandler(void)
     /* Read one byte from the receive data register */
     RxBuffer[RxCount++] = (USART_ReceiveData(USART1) & 0x7F);
 		
-		//process Unsolicited result codes !!!!!!!!!!!!!!!!!!!!!!!!!
+		//Handle URC
+		if(RxBuffer[0] == '+') {
+			if(RxBuffer[RxCount-2] == '\r' && RxBuffer[RxCount-1] == '\n') {
+				//TODO add to urc queue
+				ClearRxBufferAndCounter();
+			}
+		}
+		
+		if(strstr((char *)RxBuffer, "RING"))
+		{
+			//add to urc queue
+			ClearRxBufferAndCounter();
+		}
+				
+		//Handle responses
 		if(moduleGSM.currentState == WAIT_FOR_RESPONSE)
 		{
 			if(strstr((char *)RxBuffer, "\r\nOK\r\n") ||
 				 strstr((char *)RxBuffer, "\r\nERROR\r\n"))
 			{
 				Queue_write(gQueueSimUsart, (char *)RxBuffer, RxCount);
-				memset(RxBuffer, 0, RxCount+1);
-				RxCount = 0;
+				ClearRxBufferAndCounter();
 				moduleGSM.currentState = moduleGSM.nextState;
 			}
 		}
