@@ -106,7 +106,7 @@ int main(void)
 	TimersMngrInit(2);
 	
 	timerInit.callback = StatusLEDon;
-	timerInit.reload = timerInit.counter = 2000;
+	timerInit.reload = timerInit.counter = 500;
 	timerInit.repeated = true;
 	TimersMngrConfigTimer(0, timerInit);
 	

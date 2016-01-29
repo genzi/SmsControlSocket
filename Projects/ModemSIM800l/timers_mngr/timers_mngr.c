@@ -56,3 +56,7 @@ void TimersMngrTimerStart(uint8_t number) {
 void TimersMngrTimerStop(uint8_t number) {
 	TimersList[number].counter = STOPPED;
 }
+
+void TimersMngrSetReloadValue(uint8_t number, int32_t reload) {
+	TimersList[number].reload = reload;
+}

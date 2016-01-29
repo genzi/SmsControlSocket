@@ -1,5 +1,6 @@
 #include "sim800l.h"
 #include "log\\logging.h"
+#include "timers_mngr\timers_mngr.h"
 
 /* Public variables ----------------------------------------------------------*/
 sim800l moduleGSM;
@@ -8,6 +9,13 @@ Queue *gQueueSimUsart;
 /* Private variables ----------------------------------------------------------*/
 static volatile int ModuleGSMDelayCounter;
 static char ResponseBuffer[512];
+
+#define MODULE_OK 2000
+#define MODULE_RESET 500
+
+static void StatusLEDBlinkRate(uint16_t rate){
+	TimersMngrSetReloadValue(0, rate);
+}
 
 
 static bool ModuleGSMResponseOK() {
@@ -46,6 +54,7 @@ void ModuleGSMProcess(void)
 		break;
 			
 		case RESETING:
+			StatusLEDBlinkRate(MODULE_RESET);
 			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "RESETING");
 			ModuleGSMReset();
 			ModuleGSMSetDelayToNextState(500, STARTING);
@@ -58,17 +67,17 @@ void ModuleGSMProcess(void)
 		break;
 			
 		case AT:
+			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Sending AT");
 			ModuleGSMWaitForResponse(50, AT_RESPONSE);
 			SendCommand("AT\r\n");
-			
-			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Sending AT");
 		break;
 		
 		case AT_RESPONSE:			
 			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
 				if(ModuleGSMResponseOK()) {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "AT_RESPONSE OK");
-					moduleGSM.currentState = READY;					
+					moduleGSM.currentState = READY;				
+					StatusLEDBlinkRate(MODULE_OK);
 				} else {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "AT_RESPONSE ERROR");
 					moduleGSM.currentState = READY;					

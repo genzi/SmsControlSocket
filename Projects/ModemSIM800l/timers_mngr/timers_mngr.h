@@ -25,6 +25,7 @@ void TimersMngrProcess(void);
 void TimersMngrDecrementCounters(void);
 void TimersMngrTimerStart(uint8_t number);
 void TimersMngrTimerStop(uint8_t number);
+void TimersMngrSetReloadValue(uint8_t number, int32_t reload);
 	 
 #ifdef __cplusplus
 }
