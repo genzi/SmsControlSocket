@@ -10,7 +10,7 @@
 #endif
 	 
 #define LOG_STRING_LENGTH 40
-#define NUMBER_OF_LOGS 10
+#define NUMBER_OF_LOGS 15
 	 
 struct sFirmwareVersion{
 	uint8_t majorVerion;

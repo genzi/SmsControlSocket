@@ -40,6 +40,8 @@
   * @{
   */ 
 	
+/* Public variables ----------------------------------------------------------*/
+
 /* Extern variables ----------------------------------------------------------*/
 extern uint8_t TxBuffer[];
 extern uint8_t RxBuffer[];

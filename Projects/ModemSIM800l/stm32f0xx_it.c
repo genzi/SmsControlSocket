@@ -31,6 +31,7 @@
 #include "stm32f0xx_it.h"
 #include "sim800l.h"
 #include "timers_mngr\timers_mngr.h"
+#include "log\logging.h"
 #include <string.h>
 
 /** @addtogroup STM32F0xx_StdPeriph_Examples
@@ -44,7 +45,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define TXBUFFERSIZE 255
-#define RXBUFFERSIZE 255
+#define RXBUFFERSIZE 511
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 __IO uint32_t SysTickCounter;
@@ -77,6 +78,7 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* Go to infinite loop when Hard Fault exception occurs */
+	Log(gLogData, eSubSystemSYSTEM, eFatalErrorLogging, "HardFault");
   while (1)
   {
   }
@@ -122,12 +124,24 @@ void SysTick_Handler(void)
 
 void USART1_IRQHandler(void)
 {
-  if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+	
+	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
   {
     /* Read one byte from the receive data register */
     RxBuffer[RxCount++] = (USART_ReceiveData(USART1) & 0x7F);
 		
-		//process Unsolicited result codes !!!!!!!!!!!!!!!!!!!!!!!!!1
+		//process Unsolicited result codes !!!!!!!!!!!!!!!!!!!!!!!!!
+		if(moduleGSM.currentState == WAIT_FOR_RESPONSE)
+		{
+			if(strstr((char *)RxBuffer, "\r\nOK\r\n") ||
+				 strstr((char *)RxBuffer, "\r\nERROR\r\n"))
+			{
+				Queue_write(gQueueSimUsart, (char *)RxBuffer, RxCount);
+				memset(RxBuffer, 0, RxCount+1);
+				RxCount = 0;
+				moduleGSM.currentState = moduleGSM.nextState;
+			}
+		}
 		
 		if(RxCount == RXBUFFERSIZE)
 		{

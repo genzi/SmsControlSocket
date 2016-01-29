@@ -9,6 +9,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx.h"
 #include <string.h>
+#include "queue\Queue.h"
 	 
 extern void USART_Send(USART_TypeDef* USARTx, uint8_t size);
 extern uint8_t TxBuffer[];	 
@@ -29,7 +30,8 @@ typedef enum {
 	SEND_SMS_TO,
 	SEND_SMS_ASNWER,
 	DELAY,
-	WAIT_FOR_RESPONSE
+	WAIT_FOR_RESPONSE,
+	IDLE
 } State;
 
 typedef enum {
@@ -44,12 +46,13 @@ typedef struct {
 } sim800l;
 
 extern sim800l moduleGSM;
+extern Queue *gQueueSimUsart;
 
 void ModuleGSMInit(void);
 void ModuleGSMProcess(void);
 void ModuleGSMReset(void);
 void ModuleGSMEnable(void);
-Response SendCommand(char *command);
+void SendCommand(char *command);
 
 void ModuleGSMDelaySetMs(int msDelay);
 void ModuleGSMDelayDecrementMs(void);

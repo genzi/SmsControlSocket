@@ -1,22 +1,31 @@
 #include "sim800l.h"
 #include "log\\logging.h"
 
-
+/* Public variables ----------------------------------------------------------*/
 sim800l moduleGSM;
+Queue *gQueueSimUsart;
 
-static Response response; 
+/* Private variables ----------------------------------------------------------*/
 static volatile int ModuleGSMDelayCounter;
+static char ResponseBuffer[512];
 
-static void ModuleGSMSetDelayToNextState(int msDelay, State nextSate)
-{
+
+static bool ModuleGSMResponseOK() {
+	return strstr(ResponseBuffer, "\r\nOK\r\n") ? true : false;
+}
+
+//static bool ModuleGSMResponseERROR() {
+//	return strstr(ResponseBuffer, "\r\nERROR\r\n") ? true : false;
+//}
+
+static void ModuleGSMSetDelayToNextState(int msDelay, State nextSate) {
 	ModuleGSMDelaySetMs(msDelay);
 	moduleGSM.nextState = nextSate;
 	moduleGSM.currentState = DELAY;
 	Log(gLogData, eSubSystemSIM800L, eInfoLogging, "goes to DELAY");
 }
 
-static void ModuleGSMWaitForResponse(int msDelay, State nextSate)
-{
+static void ModuleGSMWaitForResponse(int msDelay, State nextSate) {
 	ModuleGSMDelaySetMs(msDelay);
 	moduleGSM.nextState = nextSate;
 	moduleGSM.currentState = WAIT_FOR_RESPONSE;
@@ -49,28 +58,39 @@ void ModuleGSMProcess(void)
 		break;
 			
 		case AT:
-			/*TODO
-			-	dodac stan WAIT_FOR_RESPONSE: przed przejsciem do tego stanu ustawic flage czekania na odpowiedz i timeout
-				inny dla kazdego zapytania. Jesli dostaniemy na uarcie prawidlowa odpiwiedz (badanie \r\n albo OK\r\n) to 
-				zmieniamy flage i w WAIT_FOR_RESPONSE decydujemy co zrobic dalej (moze skoczyc do innego stanu lub od razu jakas akcja)
-			- do wysylania i zapisywania odpowiedzi uzyc kolejki
-			*/
 			ModuleGSMWaitForResponse(50, AT_RESPONSE);
 			SendCommand("AT\r\n");
 			
-			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "goes to READY");
+			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Sending AT");
 		break;
 		
-		case AT_RESPONSE:
-			
+		case AT_RESPONSE:			
+			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
+				if(ModuleGSMResponseOK()) {
+					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "AT_RESPONSE OK");
+					moduleGSM.currentState = READY;					
+				} else {
+					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "AT_RESPONSE ERROR");
+					moduleGSM.currentState = READY;					
+				}
+			} else {
+				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "AT_RESPONSE TIMEOUT");
+				moduleGSM.currentState = IDLE;				
+			}					
 		break;
 			
 		case READY:
 			
 		break;
 		
+		case IDLE:
+			LogWithNum(gLogData, eSubSystemSIM800L, eErrorLogging, "IDLE state", moduleGSM.currentState);
+			ModuleGSMSetDelayToNextState(5000, RESETING);			
+		break;
+
 		default:
 			LogWithNum(gLogData, eSubSystemSIM800L, eErrorLogging, "UNDEFINED state:%d", moduleGSM.currentState);
+			ModuleGSMSetDelayToNextState(5000, RESETING);
 		break;
 	}
 }
@@ -78,6 +98,16 @@ void ModuleGSMProcess(void)
 void ModuleGSMInit(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
+	
+	gQueueSimUsart = Queue_create(1,512);
+	
+	if(gQueueSimUsart) {
+		Log(gLogData, eSubSystemSIM800L, eInfoLogging, "QueueSimUsart created");
+	} else {
+		Log(gLogData, eSubSystemSIM800L, eFatalErrorLogging, "QueueSimUsart init error");
+		while(true){}	//TODO how to handle this error
+	}
+	
   /* GPIOC Periph clock enable */
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOC, ENABLE);
 
@@ -105,11 +135,10 @@ void ModuleGSMEnable(void)
 	GPIO_SetBits(GPIOC, GPIO_Pin_6);
 }
 
-Response SendCommand(char *command)
+void SendCommand(char *command)
 {
 	strcpy((char *)TxBuffer, command);
 	USART_Send(USART1, strlen((char *)TxBuffer));	
-	return RESP_OK;
 }
 
 /**
