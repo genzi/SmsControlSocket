@@ -78,16 +78,83 @@ void ModuleGSMProcess(void)
 			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
 				if(ModuleGSMResponseOK()) {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "AT_RESPONSE OK");
-					ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, READY);				
-					StatusLEDBlinkRate(MODULE_OK);
+					ModuleGSMSetDelayToNextState(3000, CHECK_PIN);				
 				} else {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "AT_RESPONSE ERROR");
-					ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, READY);					
+					ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, IDLE);					
 				}
 			} else {
 				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "AT_RESPONSE TIMEOUT");
 				ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, IDLE);				
 			}					
+		break;
+			
+		case CHECK_PIN:
+			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Sending AT+CPIN?");
+			ModuleGSMWaitForResponse(100, CHECK_PIN_RESPONSE);
+			SendCommand("AT+CPIN?\r\n");			
+		break;
+		
+		case CHECK_PIN_RESPONSE:
+			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
+				if(strstr(ResponseBuffer, "+CPIN: READY")) {
+					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "CHECK_PIN_RESPONSE OK");
+					ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, SET_SMS_TXT_MODE);				
+				} else {
+					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "CHECK_PIN_RESPONSE ERROR");
+					ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, IDLE);					
+				}
+			} else {
+				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "CHECK_PIN_RESPONSE TIMEOUT");
+				ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, IDLE);				
+			}				
+		break;
+			
+		case SET_SMS_TXT_MODE:
+			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Sending AT+CMGF=1");
+			ModuleGSMWaitForResponse(100, SET_SMS_TXT_MODE_RESPONSE);
+			SendCommand("AT+CMGF=1\r\n");			
+		break;
+		
+		case SET_SMS_TXT_MODE_RESPONSE:
+			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
+				if(ModuleGSMResponseOK()) {
+					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "CMGF=1_RESPONSE OK");
+					ModuleGSMSetDelayToNextState(100, CHECK_CREG);				
+				} else {
+					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "CMGF=1_RESPONSE ERROR");
+					ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, IDLE);					
+				}
+			} else {
+				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "CMGF=1_RESPONSE TIMEOUT");
+				ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, IDLE);				
+			}				
+		break;
+			
+		case 	CHECK_CREG:
+			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Sending AT+CREG?");
+			ModuleGSMWaitForResponse(100, CHECK_CREG_RESPONSE);
+			SendCommand("AT+CREG?\r\n");			
+		break;
+		
+		case CHECK_CREG_RESPONSE:
+			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
+				if(strstr(ResponseBuffer, "+CREG: 0,5") ||
+					 strstr(ResponseBuffer, "+CREG: 0,1")) {
+					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Registered in network");
+					ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, READY);				
+					StatusLEDBlinkRate(MODULE_OK);
+				} else if(strstr(ResponseBuffer, "+CREG: 0,2")) {
+					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "searching network");
+					ModuleGSMSetDelayToNextState(3000, CHECK_CREG);
+				} else {
+					Log(gLogData, eSubSystemSIM800L, eErrorLogging, "error cannot register");
+					ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, IDLE);					
+				}
+			} else {
+				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "CHECK_PIN_RESPONSE TIMEOUT");
+				ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, IDLE);				
+			}				
 		break;
 			
 		case READY:
