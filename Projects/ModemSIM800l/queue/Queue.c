@@ -1,11 +1,12 @@
 #include "Queue.h"
+#include <stdint.h>
 
 Queue *Queue_create(int amount, int length)
 {
     Queue *queue = calloc(1, sizeof(Queue));
 
     queue->data = RingBuffer_create(amount * length);
-    queue->sizes = RingBuffer_create(amount);
+    queue->sizes = RingBuffer_create(amount * 2);
     queue->amount = amount;
     queue->length = length;
     queue->currentAmount = 0;
@@ -30,7 +31,7 @@ int Queue_write(Queue *queue, char *data, int length)
         return -1;
     }
 
-    if(length > queue->length || length > 255)
+    if(length > queue->length || length > 0xFFFF)
     {
         return -1;
     }
@@ -40,7 +41,7 @@ int Queue_write(Queue *queue, char *data, int length)
         return -1;
     }
 
-    if(RingBuffer_write(queue->sizes, (char *)&length, 1) == -1)
+    if(RingBuffer_write(queue->sizes, (char *)&length, 2) == -1)
     {
         return -1;
     }
@@ -51,7 +52,7 @@ int Queue_write(Queue *queue, char *data, int length)
 
 int Queue_read(Queue *queue, char *data)
 {
-    char size;
+    uint16_t size;
 
     if(queue->currentAmount == 0)
     {
@@ -60,7 +61,7 @@ int Queue_read(Queue *queue, char *data)
 
     queue->currentAmount--;
 
-    RingBuffer_read(queue->sizes, &size, 1);
+    RingBuffer_read(queue->sizes, (char *)&size, 2);
 
     return RingBuffer_read(queue->data, data, size);
 }

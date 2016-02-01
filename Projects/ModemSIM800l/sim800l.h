@@ -8,11 +8,15 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx.h"
-#include <string.h>
 #include "queue\Queue.h"
+#include <string.h>
+#include <stdbool.h>
+	 
 	 
 extern void USART_Send(USART_TypeDef* USARTx, uint8_t size);
-extern uint8_t TxBuffer[];	 
+extern __IO uint8_t TxBuffer[];	 
+extern __IO uint8_t RxBuffer[];
+extern __IO uint16_t RxCount;
 	 
 typedef enum {
 	RESETING,
@@ -30,6 +34,8 @@ typedef enum {
 	READY,
 	CHECK_NEW_SMS,
 	READ_NEW_SMS,
+	READ_NEW_SMS_RESPONSE,
+	DELETE_ALL_SMS,
 	SEND_SMS_TO,
 	SEND_SMS_ASNWER,
 	DELAY,
@@ -52,10 +58,12 @@ extern sim800l moduleGSM;
 extern Queue *gQueueSimUsart;
 
 void ModuleGSMInit(void);
-void ModuleGSMProcess(void);
+void ModuleGSMStateMachineProcess(void);
+void ModuleGSMRxBufferAnalyzeProcess(volatile uint8_t *RxBuffer, volatile uint16_t RxCount, volatile bool newDataFlag);
 void ModuleGSMReset(void);
 void ModuleGSMEnable(void);
 void SendCommand(char *command);
+void SendCommandWithNum(char *command, int num);
 
 void ModuleGSMDelaySetMs(int msDelay);
 void ModuleGSMDelayDecrementMs(void);

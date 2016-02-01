@@ -49,11 +49,12 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 __IO uint32_t SysTickCounter;
-uint8_t TxBuffer[TXBUFFERSIZE];
-uint8_t RxBuffer[RXBUFFERSIZE];
-uint8_t NbrOfDataToTransfer = 0;
+__IO uint8_t TxBuffer[TXBUFFERSIZE];
+__IO uint8_t RxBuffer[RXBUFFERSIZE];
+__IO uint8_t NbrOfDataToTransfer = 0;
 __IO uint8_t TxCount = 0; 
 __IO uint16_t RxCount = 0;
+__IO bool newDataUSART1Flag;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -116,11 +117,6 @@ void SysTick_Handler(void)
 	TimersMngrDecrementCounters();
 }
 
-static void ClearRxBufferAndCounter(void) {
-	memset(RxBuffer, 0, RxCount);
-	RxCount = 0;
-}
-
 /**
   * @brief  This function handles USART1 global interrupt request.
   * @param  None
@@ -134,37 +130,13 @@ void USART1_IRQHandler(void)
   {
     /* Read one byte from the receive data register */
     RxBuffer[RxCount++] = (USART_ReceiveData(USART1) & 0x7F);
-		
-		//Handle URC
-		if(RxBuffer[0] == '+') {
-			if(RxBuffer[RxCount-2] == '\r' && RxBuffer[RxCount-1] == '\n') {
-				//TODO add to urc queue
-				ClearRxBufferAndCounter();
-			}
-		}
-		
-		if(strstr((char *)RxBuffer, "RING"))
-		{
-			//add to urc queue
-			ClearRxBufferAndCounter();
-		}
 				
-		//Handle responses
-		if(moduleGSM.currentState == WAIT_FOR_RESPONSE)
-		{
-			if(strstr((char *)RxBuffer, "\r\nOK\r\n") ||
-				 strstr((char *)RxBuffer, "\r\nERROR\r\n"))
-			{
-				Queue_write(gQueueSimUsart, (char *)RxBuffer, RxCount);
-				ClearRxBufferAndCounter();
-				moduleGSM.currentState = moduleGSM.nextState;
-			}
-		}
-		
 		if(RxCount == RXBUFFERSIZE)
 		{
 			RxCount = 0;
 		}
+		
+		newDataUSART1Flag = true;
   }
 
   if(USART_GetITStatus(USART1, USART_IT_TXE) != RESET)
@@ -176,9 +148,20 @@ void USART1_IRQHandler(void)
     {
       /* Disable the USART1 Transmit interrupt */
       USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
-			memset(TxBuffer, 0, TXBUFFERSIZE);
+			memset((void *)TxBuffer, 0, TXBUFFERSIZE);
     }
   }
+	
+	if(USART_GetITStatus(USART1, USART_ISR_ORE) != RESET) {
+		USART_ClearITPendingBit(USART1, USART_ISR_ORE);
+	}
+	if(USART_GetITStatus(USART1, USART_ISR_PE) != RESET) {
+		USART_ClearITPendingBit(USART1, USART_ISR_PE);
+	}
+	if(USART_GetITStatus(USART1, USART_ISR_FE) != RESET) {
+		USART_ClearITPendingBit(USART1, USART_ISR_FE);
+	}
+
 }
 
 /******************************************************************************/
