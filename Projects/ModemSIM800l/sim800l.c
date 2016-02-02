@@ -7,6 +7,7 @@
 /* Public variables ----------------------------------------------------------*/
 sim800l moduleGSM;
 Queue *gQueueSimUsart;
+Queue *gQueueSimURC;
 
 /* Private variables ----------------------------------------------------------*/
 static volatile int ModuleGSMDelayCounter;
@@ -44,6 +45,10 @@ static void ModuleGSMWaitForResponse(int msDelay, State nextSate) {
 
 void ModuleGSMStateMachineProcess(void)
 {
+	char *pStr[3];
+	char *pStrTok[3];
+	static uint8_t smsNumber;
+	
 	switch(moduleGSM.currentState)
 	{
 		case DELAY:
@@ -152,25 +157,33 @@ void ModuleGSMStateMachineProcess(void)
 					ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, IDLE);					
 				}
 			} else {
-				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "CHECK_PIN_RESPONSE TIMEOUT");
+				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "CHECK_CREG_RESPONSE TIMEOUT");
 				ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, IDLE);				
 			}				
 		break;
 			
 		case READY:
-			//TODO have to check CREG registrartion in network
+			//TODO have to check CREG registrartion in network; I need use timer
+			//but without callback, only read here actual timer counter
 			//analyze all changes state in reaction to ok, error etc
+			if(Queue_read(gQueueSimURC, ResponseBuffer) != -1) {
+				if((pStr[0] = strstr((char *)ResponseBuffer, "+CMTI:")) != NULL) {
+					if((pStr[1] = strstr(pStr[0], "\r\n")) != NULL) {
+						pStrTok[0] = strtok(pStr[0], ",");
+						pStrTok[1] = strtok(NULL, ",");
+						smsNumber = atoi(pStrTok[1]);
+						moduleGSM.currentState = READ_NEW_SMS;
+					}
+				} else if((pStr[0] = strstr((char *)ResponseBuffer, "RING")) != NULL) {
+					//for now do nothing
+				}
+			}
 		break;
 		
 		case READ_NEW_SMS:
-			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
-				LogWithNum(gLogData, eSubSystemSIM800L, eInfoLogging, "Send AT+CMGR=%d", atoi(ResponseBuffer));
-				ModuleGSMWaitForResponse(1000, READ_NEW_SMS_RESPONSE);
-				SendCommandWithNum("AT+CMGR=%d\r\n", atoi(ResponseBuffer));
-			} else {
-				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "READ_NEW_SMS read queue err");
-				ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, READY);
-			}
+			LogWithNum(gLogData, eSubSystemSIM800L, eInfoLogging, "Send AT+CMGR=%d", smsNumber);
+			ModuleGSMWaitForResponse(1000, READ_NEW_SMS_RESPONSE);
+			SendCommandWithNum("AT+CMGR=%d\r\n", smsNumber);
 		break;
 			
 		case READ_NEW_SMS_RESPONSE:
@@ -180,7 +193,7 @@ void ModuleGSMStateMachineProcess(void)
 				// only for tests; have to create new object sms with properties like tel number, text...
 				if(strstr(ResponseBuffer, "Zapal")) {
 					GPIOC->BSRR |= GPIO_Pin_9;
-				} else {
+				} else if(strstr(ResponseBuffer, "Zgas")) {
 					GPIOC->BRR |= GPIO_Pin_9;
 				}
 				
@@ -215,7 +228,6 @@ static void ClearRxBufferAndCounter(void) {
 void ModuleGSMRxBufferAnalyzeProcess(volatile uint8_t *RxBuffer, volatile uint16_t RxCount, volatile bool newDataFlag) {
 		
 	char *pStr[3];
-	char *pStrTok[3];
 	
 	if(newDataFlag == false) {
 		return;
@@ -224,39 +236,32 @@ void ModuleGSMRxBufferAnalyzeProcess(volatile uint8_t *RxBuffer, volatile uint16
 	
 	//Handle URC
 	if((pStr[0] = strstr((char *)RxBuffer, "+CMTI:")) != NULL) {
-		if(strstr(pStr[0], "\r\n")) {
-			pStrTok[0] = strtok(pStr[0], ",");
-			pStrTok[1] = strtok(NULL, ",");
-			Queue_write(gQueueSimUsart, pStrTok[1], strlen(pStrTok[1]));
-			ClearRxBufferAndCounter();
-			moduleGSM.currentState = READ_NEW_SMS;
+		if((pStr[1] = strstr(pStr[0], "\r\n")) != NULL) {
+			if(Queue_write(gQueueSimURC, pStr[0], (pStr[1] - pStr[0] + 2)) != -1) {
+				ClearRxBufferAndCounter();
+			}
 		}
-	}
-	
-	if(strstr((char *)RxBuffer, "RING"))
-	{
-		//add to urc queue
-		ClearRxBufferAndCounter();
+	} else if((pStr[0] = strstr((char *)RxBuffer, "RING")) != NULL) {
+		if(Queue_write(gQueueSimURC, pStr[0], 4) != -1) {
+			ClearRxBufferAndCounter();
+		}
 	}
 			
 	//Handle responses
-	if(moduleGSM.currentState == WAIT_FOR_RESPONSE)
-	{
+	if(moduleGSM.currentState == WAIT_FOR_RESPONSE) {
 		if((pStr[0] = strstr((char *)RxBuffer, "+CMGR:")) != NULL) {
-			if(strstr(pStr[0], "OK\r\n")) {
-			Queue_write(gQueueSimUsart, (char *)RxBuffer, RxCount+1);
-			ClearRxBufferAndCounter();
-			moduleGSM.currentState = READ_NEW_SMS_RESPONSE;				
+			if((pStr[1] = strstr(pStr[0], "OK\r\n")) != NULL) {
+				if(Queue_write(gQueueSimUsart, pStr[0], (pStr[1] - pStr[0] + 4)) != -1) {
+					ClearRxBufferAndCounter();
+					moduleGSM.currentState = READ_NEW_SMS_RESPONSE;			
+				}					
 			}
-		}
-
-		
-		if(strstr((char *)RxBuffer, "\r\nOK\r\n") ||
-			 strstr((char *)RxBuffer, "\r\nERROR\r\n"))
-		{
-			Queue_write(gQueueSimUsart, (char *)RxBuffer, RxCount+1);
-			ClearRxBufferAndCounter();
-			moduleGSM.currentState = moduleGSM.nextState;
+		} else if(strstr((char *)RxBuffer, "\r\nOK\r\n") ||
+						  strstr((char *)RxBuffer, "\r\nERROR\r\n")) {
+			if(Queue_write(gQueueSimUsart, (char *)RxBuffer, RxCount+1) != -1) {
+				ClearRxBufferAndCounter();
+				moduleGSM.currentState = moduleGSM.nextState;
+			}
 		}
 	}
 }
@@ -265,6 +270,7 @@ void ModuleGSMInit(void) {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	
 	gQueueSimUsart = Queue_create(1,512);
+	gQueueSimURC = Queue_create(1,40);
 	
 	if(gQueueSimUsart) {
 		Log(gLogData, eSubSystemSIM800L, eInfoLogging, "QueueSimUsart created");
