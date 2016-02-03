@@ -49,7 +49,7 @@ extern __IO uint8_t NbrOfDataToTransfer;
 extern __IO uint8_t TxCount; 
 extern __IO uint16_t RxCount;
 extern __IO uint32_t SysTickCounter;
-extern __IO bool newDataUSART1Flag;
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define LED_BLUE GPIO_Pin_8
@@ -149,8 +149,7 @@ int main(void)
 //		Delay(500);
 //		LED_On(LED_YELLOW);
 //		LED_Off(LED_BLUE);
-		ModuleGSMRxBufferAnalyzeProcess(RxBuffer, RxCount, newDataUSART1Flag);
-		ModuleGSMStateMachineProcess();
+		ModuleGSMMainProcess();
 		TimersMngrProcess();
     
 		if(transmitFlag)

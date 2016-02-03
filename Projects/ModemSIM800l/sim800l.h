@@ -56,8 +56,10 @@ typedef struct {
 
 extern sim800l moduleGSM;
 extern Queue *gQueueSimUsart;
+extern __IO bool newDataUSART1Flag;
 
 void ModuleGSMInit(void);
+void ModuleGSMMainProcess(void);
 void ModuleGSMStateMachineProcess(void);
 void ModuleGSMRxBufferAnalyzeProcess(volatile uint8_t *RxBuffer, volatile uint16_t RxCount, volatile bool newDataFlag);
 void ModuleGSMReset(void);

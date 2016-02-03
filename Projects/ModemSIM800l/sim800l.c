@@ -296,6 +296,16 @@ void ModuleGSMInit(void) {
 	
 }
 
+/**
+	Main process executes RxBufferAnalyzeProcess which analyzes buffer that is filling in uart irq
+	and executes StateMachineProcess which depends of actual modem state and data arrived
+*/
+
+void ModuleGSMMainProcess() {
+	ModuleGSMRxBufferAnalyzeProcess(RxBuffer, RxCount, newDataUSART1Flag);
+	ModuleGSMStateMachineProcess();
+}
+
 void ModuleGSMReset(void)
 {
 	GPIO_ResetBits(GPIOC, GPIO_Pin_6);
