@@ -1022,6 +1022,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>sms</GroupName>
+          <Files>
+            <File>
+              <FileName>sms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sms\sms.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -2167,6 +2177,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>sms</GroupName>
+          <Files>
+            <File>
+              <FileName>sms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sms\sms.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -3094,6 +3114,16 @@
               <FileName>timers_mngr.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\timers_mngr\timers_mngr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>sms</GroupName>
+          <Files>
+            <File>
+              <FileName>sms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sms\sms.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -4242,6 +4272,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>sms</GroupName>
+          <Files>
+            <File>
+              <FileName>sms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sms\sms.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -5169,6 +5209,16 @@
               <FileName>timers_mngr.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\timers_mngr\timers_mngr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>sms</GroupName>
+          <Files>
+            <File>
+              <FileName>sms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sms\sms.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -6102,6 +6152,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>sms</GroupName>
+          <Files>
+            <File>
+              <FileName>sms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sms\sms.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -7029,6 +7089,16 @@
               <FileName>timers_mngr.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\timers_mngr\timers_mngr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>sms</GroupName>
+          <Files>
+            <File>
+              <FileName>sms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sms\sms.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -7962,6 +8032,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>sms</GroupName>
+          <Files>
+            <File>
+              <FileName>sms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sms\sms.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -8889,6 +8969,16 @@
               <FileName>timers_mngr.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\timers_mngr\timers_mngr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>sms</GroupName>
+          <Files>
+            <File>
+              <FileName>sms.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sms\sms.c</FilePath>
             </File>
           </Files>
         </Group>

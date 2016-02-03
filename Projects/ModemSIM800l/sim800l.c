@@ -1,6 +1,7 @@
 #include "sim800l.h"
 #include "log\\logging.h"
 #include "timers_mngr\timers_mngr.h"
+#include "sms\sms.h"
 
 #define DELAY_BTW_CMDS 100
 
@@ -12,6 +13,8 @@ Queue *gQueueSimURC;
 /* Private variables ----------------------------------------------------------*/
 static volatile int ModuleGSMDelayCounter;
 static char ResponseBuffer[512];
+static SMS *smsReceived;
+static SMS *smsToSend;
 
 #define MODULE_OK 2000
 #define MODULE_RESET 500
@@ -41,6 +44,11 @@ static void ModuleGSMWaitForResponse(int msDelay, State nextSate) {
 	moduleGSM.nextState = nextSate;
 	moduleGSM.currentState = WAIT_FOR_RESPONSE;
 	Log(gLogData, eSubSystemSIM800L, eInfoLogging, "goes to WAIT_FOR_RESPONSE");
+}
+
+static void ClearRxBufferAndCounter(void) {
+	memset((void *)RxBuffer, 0, RxCount);
+	RxCount = 0;
 }
 
 void ModuleGSMStateMachineProcess(void)
@@ -177,6 +185,8 @@ void ModuleGSMStateMachineProcess(void)
 				} else if((pStr[0] = strstr((char *)ResponseBuffer, "RING")) != NULL) {
 					//for now do nothing
 				}
+			} else if(smsToSend) {
+				ModuleGSMSetDelayToNextState(1000, SEND_SMS);
 			}
 		break;
 		
@@ -190,11 +200,19 @@ void ModuleGSMStateMachineProcess(void)
 			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
 				Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Message readed");
 				ModuleGSMSetDelayToNextState(100, DELETE_ALL_SMS);
-				// only for tests; have to create new object sms with properties like tel number, text...
-				if(strstr(ResponseBuffer, "Zapal")) {
-					GPIOC->BSRR |= GPIO_Pin_9;
-				} else if(strstr(ResponseBuffer, "Zgas")) {
-					GPIOC->BRR |= GPIO_Pin_9;
+				
+				if(SMSParse(smsReceived, ResponseBuffer)) {
+					smsToSend = SMSCreate();
+					if(strstr(smsReceived->message, "Zapal")) {
+						GPIOC->BSRR |= GPIO_Pin_9;
+						if(smsToSend) {strcpy(smsToSend->message, "Dioda zaswiecona");}
+					} else if(strstr(smsReceived->message, "Zgas")) {
+						GPIOC->BRR |= GPIO_Pin_9;
+						if(smsToSend) {strcpy(smsToSend->message, "Dioda zgaszona");}
+					}	else {
+						if(smsToSend) {strcpy(smsToSend->message, "Nieznane polecenie");}
+					}			
+					if(smsToSend) {strcpy(smsToSend->telNumber, smsReceived->telNumber);}
 				}
 				
 			} else {
@@ -208,6 +226,55 @@ void ModuleGSMStateMachineProcess(void)
 			SendCommand("AT+CMGD=1,4\r\n");
 		break;
 		
+		case SEND_SMS:
+			ClearRxBufferAndCounter();
+			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Send AT+CMGS=telnumber");
+			ModuleGSMWaitForResponse(1000, SEND_SMS_PROMPT);
+			SendCommandWithStr("AT+CMGS=\"%s\"\r\n", smsToSend->telNumber);
+		break;
+		
+		case SEND_SMS_PROMPT:
+			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
+				if(strstr(ResponseBuffer, ">")) {
+					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "sms send received > ");
+					ModuleGSMSetDelayToNextState(100, SEND_SMS_CONTENT);				
+				} else {
+					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "CMGS prompt err");
+					SMSDestroy((void **)smsToSend);
+					ModuleGSMSetDelayToNextState(1000, READY);					
+				}
+			} else {
+				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "CMGS TIMEOUT");
+				SMSDestroy((void **)smsToSend);
+				ModuleGSMSetDelayToNextState(1000, READY);				
+			}			
+		break;
+			
+		case SEND_SMS_CONTENT:
+			ClearRxBufferAndCounter();
+			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "sending sms content");
+			ModuleGSMWaitForResponse(60000, SEND_SMS_RESPONSE);
+			SendSMSContent(smsToSend->message);			
+		break;
+		
+		case SEND_SMS_RESPONSE:
+			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
+				if(ModuleGSMResponseOK()) {
+					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "SEND_SMS_RESPONSE OK");
+					SMSDestroy((void **)smsToSend);
+					ModuleGSMSetDelayToNextState(100, READY);				
+				} else {
+					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "SEND_SMS_RESPONSE ERROR");
+					SMSDestroy((void **)smsToSend);
+					ModuleGSMSetDelayToNextState(1000, READY);					
+				}
+			} else {
+				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "SEND_SMS_RESPONSE TIMEOUT");
+				SMSDestroy((void **)smsToSend);
+				ModuleGSMSetDelayToNextState(1000, READY);				
+			}			
+		break;
+		
 		case IDLE:
 			LogWithNum(gLogData, eSubSystemSIM800L, eErrorLogging, "IDLE state", moduleGSM.currentState);
 			ModuleGSMSetDelayToNextState(5000, RESETING);			
@@ -218,11 +285,6 @@ void ModuleGSMStateMachineProcess(void)
 			ModuleGSMSetDelayToNextState(5000, RESETING);
 		break;
 	}
-}
-
-static void ClearRxBufferAndCounter(void) {
-	memset((void *)RxBuffer, 0, RxCount);
-	RxCount = 0;
 }
 
 void ModuleGSMRxBufferAnalyzeProcess(volatile uint8_t *RxBuffer, volatile uint16_t RxCount, volatile bool newDataFlag) {
@@ -262,6 +324,11 @@ void ModuleGSMRxBufferAnalyzeProcess(volatile uint8_t *RxBuffer, volatile uint16
 				ClearRxBufferAndCounter();
 				moduleGSM.currentState = moduleGSM.nextState;
 			}
+		} else if(strstr((char *)RxBuffer, ">")) {
+			if(Queue_write(gQueueSimUsart, ">", 1) != -1) {
+				ClearRxBufferAndCounter();
+				moduleGSM.currentState = moduleGSM.nextState;
+			}				
 		}
 	}
 }
@@ -276,6 +343,22 @@ void ModuleGSMInit(void) {
 		Log(gLogData, eSubSystemSIM800L, eInfoLogging, "QueueSimUsart created");
 	} else {
 		Log(gLogData, eSubSystemSIM800L, eFatalErrorLogging, "QueueSimUsart init error");
+		while(true){}	//TODO how to handle this error
+	}
+	
+	if(gQueueSimURC) {
+		Log(gLogData, eSubSystemSIM800L, eInfoLogging, "QueueSimURC created");
+	} else {
+		Log(gLogData, eSubSystemSIM800L, eFatalErrorLogging, "QueueSimURC init error");
+		while(true){}	//TODO how to handle this error
+	}
+	
+	smsReceived = SMSCreate();
+	
+	if(smsReceived) {
+		Log(gLogData, eSubSystemSIM800L, eInfoLogging, "smsReceived created");
+	} else {
+		Log(gLogData, eSubSystemSIM800L, eFatalErrorLogging, "smsReceived init error");
 		while(true){}	//TODO how to handle this error
 	}
 	
@@ -325,6 +408,18 @@ void SendCommand(char *command)
 void SendCommandWithNum(char *command, int num)
 {
 	sprintf((char *)TxBuffer, command, num);
+	USART_Send(USART1, strlen((char *)TxBuffer));	
+}
+
+void SendCommandWithStr(char *command, char *str)
+{
+	sprintf((char *)TxBuffer, command, str);
+	USART_Send(USART1, strlen((char *)TxBuffer));	
+}
+
+void SendSMSContent(char *content)
+{
+	sprintf((char *)TxBuffer, "%s%c", content, '\x1A');
 	USART_Send(USART1, strlen((char *)TxBuffer));	
 }
 

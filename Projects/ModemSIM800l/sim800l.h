@@ -36,8 +36,10 @@ typedef enum {
 	READ_NEW_SMS,
 	READ_NEW_SMS_RESPONSE,
 	DELETE_ALL_SMS,
-	SEND_SMS_TO,
-	SEND_SMS_ASNWER,
+	SEND_SMS,
+	SEND_SMS_PROMPT,
+	SEND_SMS_CONTENT,
+	SEND_SMS_RESPONSE,
 	DELAY,
 	WAIT_FOR_RESPONSE,
 	IDLE
@@ -66,6 +68,8 @@ void ModuleGSMReset(void);
 void ModuleGSMEnable(void);
 void SendCommand(char *command);
 void SendCommandWithNum(char *command, int num);
+void SendCommandWithStr(char *command, char *str);
+void SendSMSContent(char *content);
 
 void ModuleGSMDelaySetMs(int msDelay);
 void ModuleGSMDelayDecrementMs(void);
