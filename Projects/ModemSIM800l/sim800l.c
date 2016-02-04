@@ -240,12 +240,12 @@ void ModuleGSMStateMachineProcess(void)
 					ModuleGSMSetDelayToNextState(100, SEND_SMS_CONTENT);				
 				} else {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "CMGS prompt err");
-					SMSDestroy((void **)smsToSend);
+					SMSDestroy(&smsToSend);
 					ModuleGSMSetDelayToNextState(1000, READY);					
 				}
 			} else {
 				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "CMGS TIMEOUT");
-				SMSDestroy((void **)smsToSend);
+				SMSDestroy(&smsToSend);
 				ModuleGSMSetDelayToNextState(1000, READY);				
 			}			
 		break;
@@ -261,16 +261,16 @@ void ModuleGSMStateMachineProcess(void)
 			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
 				if(ModuleGSMResponseOK()) {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "SEND_SMS_RESPONSE OK");
-					SMSDestroy((void **)smsToSend);
+					SMSDestroy(&smsToSend);
 					ModuleGSMSetDelayToNextState(100, READY);				
 				} else {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "SEND_SMS_RESPONSE ERROR");
-					SMSDestroy((void **)smsToSend);
+					SMSDestroy(&smsToSend);
 					ModuleGSMSetDelayToNextState(1000, READY);					
 				}
 			} else {
 				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "SEND_SMS_RESPONSE TIMEOUT");
-				SMSDestroy((void **)smsToSend);
+				SMSDestroy(&smsToSend);
 				ModuleGSMSetDelayToNextState(1000, READY);				
 			}			
 		break;

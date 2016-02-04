@@ -15,7 +15,7 @@ typedef struct {
 } SMS;
 	 
 SMS *SMSCreate(void);
-void SMSDestroy(void **sms);
+void SMSDestroy(SMS **sms);
 bool SMSParse(SMS *sms, char *buffer);
 
 

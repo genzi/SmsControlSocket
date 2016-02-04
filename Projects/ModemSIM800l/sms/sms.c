@@ -10,7 +10,7 @@ SMS *SMSCreate(void) {
   return sms;
 }
 
-void SMSDestroy(void **sms) {
+void SMSDestroy(SMS **sms) {
         if (*sms != NULL) {
                 free(*sms);
                 *sms = NULL;
