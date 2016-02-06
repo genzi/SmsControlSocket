@@ -144,11 +144,7 @@ int main(void)
 
   while (1)
   {
-//		LED_Off(LED_YELLOW);
-//		LED_On(LED_BLUE);
-//		Delay(500);
-//		LED_On(LED_YELLOW);
-//		LED_Off(LED_BLUE);
+
 		ModuleGSMMainProcess();
 		TimersMngrProcess();
     
@@ -164,7 +160,7 @@ int main(void)
   }
 }
 
-void ModuleGSMSMSReceivedCallBack(SMS *smsReceived) {
+void ModuleGSMSMSReceivedCallback(SMS *smsReceived) {
 	
 	SMS *smsToSend = SMSCreate();
 	if(strstr(smsReceived->message, "Zapal")) {
@@ -181,6 +177,10 @@ void ModuleGSMSMSReceivedCallBack(SMS *smsReceived) {
 	if(smsToSend) {
 		ModuleGSMSMSSend(smsToSend);
 	}
+}
+
+void ModuleGSMSMSSendedCallback(Response response) {
+	
 }
 
 /**

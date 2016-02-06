@@ -49,7 +49,8 @@ typedef enum {
 typedef enum {
 	RESP_OK,
 	RESP_ERROR,
-	RESP_WAIT
+	RESP_WAIT,
+	RESP_TIMEOUT
 } Response;
 	 
 typedef struct {
@@ -79,7 +80,7 @@ Response ModuleGSMDelayCheckMs(void);
 void ModuleGSMSMSSend(SMS *lSmsToSend);
 
 //Callback functions
-__weak void ModuleGSMSMSReceivedCallBack(SMS *smsReceived);
+//void ModuleGSMSMSReceivedCallBack(SMS *smsReceived);
 	 
 	 
 	 

@@ -18,6 +18,28 @@ static SMS *smsToSend;
 #define MODULE_OK 2000
 #define MODULE_RESET 500
 
+/**
+	Callback functions
+*/
+
+__weak void ModuleGSMSMSStartedCallback(void) {
+	
+}
+
+__weak void ModuleGSMSMSConnectedToNetworkCallback(void) {
+	
+}
+
+__weak void ModuleGSMSMSReceivedCallback(SMS *smsReceived) {
+	
+}
+
+__weak void ModuleGSMSMSSendedCallback(Response response) {
+	
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
 static void StatusLEDBlinkRate(uint16_t rate){
 	TimersMngrSetReloadValue(0, rate);
 }
@@ -90,6 +112,7 @@ void ModuleGSMStateMachineProcess(void)
 			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
 				if(ModuleGSMResponseOK()) {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "AT_RESPONSE OK");
+					ModuleGSMSMSStartedCallback();
 					ModuleGSMSetDelayToNextState(3000, CHECK_PIN);				
 				} else {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "AT_RESPONSE ERROR");
@@ -154,8 +177,9 @@ void ModuleGSMStateMachineProcess(void)
 				if(strstr(ResponseBuffer, "+CREG: 0,5") ||
 					 strstr(ResponseBuffer, "+CREG: 0,1")) {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Registered in network");
-					ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, READY);				
 					StatusLEDBlinkRate(MODULE_OK);
+					ModuleGSMSMSConnectedToNetworkCallback();
+					ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, READY);				
 				} else if(strstr(ResponseBuffer, "+CREG: 0,2")) {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "searching network");
 					ModuleGSMSetDelayToNextState(3000, CHECK_CREG);
@@ -198,15 +222,14 @@ void ModuleGSMStateMachineProcess(void)
 		case READ_NEW_SMS_RESPONSE:
 			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
 				Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Message readed");
-				ModuleGSMSetDelayToNextState(100, DELETE_ALL_SMS);
 				
 				if(SMSParse(smsReceived, ResponseBuffer)) {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Message parsed");
-					ModuleGSMSMSReceivedCallBack(smsReceived);
+					ModuleGSMSMSReceivedCallback(smsReceived);
 				} else {
 					Log(gLogData, eSubSystemSIM800L, eErrorLogging, "Message parse err");
 				}
-				
+				ModuleGSMSetDelayToNextState(100, DELETE_ALL_SMS);
 			} else {
 				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "Message read err");
 				ModuleGSMSetDelayToNextState(100, READY);
@@ -254,15 +277,18 @@ void ModuleGSMStateMachineProcess(void)
 				if(ModuleGSMResponseOK()) {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "SEND_SMS_RESPONSE OK");
 					SMSDestroy(&smsToSend);
+					ModuleGSMSMSSendedCallback(RESP_OK);
 					ModuleGSMSetDelayToNextState(100, READY);				
 				} else {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "SEND_SMS_RESPONSE ERROR");
 					SMSDestroy(&smsToSend);
+					ModuleGSMSMSSendedCallback(RESP_ERROR);
 					ModuleGSMSetDelayToNextState(1000, READY);					
 				}
 			} else {
 				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "SEND_SMS_RESPONSE TIMEOUT");
 				SMSDestroy(&smsToSend);
+				ModuleGSMSMSSendedCallback(RESP_TIMEOUT);
 				ModuleGSMSetDelayToNextState(1000, READY);				
 			}			
 		break;
@@ -455,10 +481,3 @@ void ModuleGSMSMSSend(SMS *lSmsToSend) {
 	smsToSend = lSmsToSend;
 }
 
-/**
-	Callback functions
-*/
-
-__weak void ModuleGSMSMSReceivedCallback(SMS *smsReceived) {
-	
-}
