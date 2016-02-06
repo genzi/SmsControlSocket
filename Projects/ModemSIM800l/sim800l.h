@@ -11,6 +11,7 @@
 #include "queue\Queue.h"
 #include <string.h>
 #include <stdbool.h>
+#include "sms\sms.h"
 	 
 	 
 extern void USART_Send(USART_TypeDef* USARTx, uint8_t size);
@@ -75,7 +76,10 @@ void ModuleGSMDelaySetMs(int msDelay);
 void ModuleGSMDelayDecrementMs(void);
 Response ModuleGSMDelayCheckMs(void);
 
+void ModuleGSMSMSSend(SMS *lSmsToSend);
 
+//Callback functions
+__weak void ModuleGSMSMSReceivedCallBack(SMS *smsReceived);
 	 
 	 
 	 

@@ -1,7 +1,6 @@
 #include "sim800l.h"
 #include "log\\logging.h"
 #include "timers_mngr\timers_mngr.h"
-#include "sms\sms.h"
 
 #define DELAY_BTW_CMDS 100
 
@@ -202,17 +201,10 @@ void ModuleGSMStateMachineProcess(void)
 				ModuleGSMSetDelayToNextState(100, DELETE_ALL_SMS);
 				
 				if(SMSParse(smsReceived, ResponseBuffer)) {
-					smsToSend = SMSCreate();
-					if(strstr(smsReceived->message, "Zapal")) {
-						GPIOC->BSRR |= GPIO_Pin_9;
-						if(smsToSend) {strcpy(smsToSend->message, "Dioda zaswiecona");}
-					} else if(strstr(smsReceived->message, "Zgas")) {
-						GPIOC->BRR |= GPIO_Pin_9;
-						if(smsToSend) {strcpy(smsToSend->message, "Dioda zgaszona");}
-					}	else {
-						if(smsToSend) {strcpy(smsToSend->message, "Nieznane polecenie");}
-					}			
-					if(smsToSend) {strcpy(smsToSend->telNumber, smsReceived->telNumber);}
+					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Message parsed");
+					ModuleGSMSMSReceivedCallBack(smsReceived);
+				} else {
+					Log(gLogData, eSubSystemSIM800L, eErrorLogging, "Message parse err");
 				}
 				
 			} else {
@@ -457,4 +449,16 @@ Response ModuleGSMDelayCheckMs(void)
 	}
 	
 	return RESP_WAIT;
+}
+
+void ModuleGSMSMSSend(SMS *lSmsToSend) {
+	smsToSend = lSmsToSend;
+}
+
+/**
+	Callback functions
+*/
+
+__weak void ModuleGSMSMSReceivedCallback(SMS *smsReceived) {
+	
 }
