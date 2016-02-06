@@ -10,7 +10,7 @@ Queue *gQueueSimUsart;
 Queue *gQueueSimURC;
 
 /* Private variables ----------------------------------------------------------*/
-static volatile int ModuleGSMDelayCounter;
+static volatile int ModuleGSMDelayCounter[10];
 static char ResponseBuffer[512];
 static SMS *smsReceived;
 static SMS *smsToSend;
@@ -54,14 +54,14 @@ static bool ModuleGSMResponseOK() {
 //}
 
 static void ModuleGSMSetDelayToNextState(int msDelay, State nextSate) {
-	ModuleGSMDelaySetMs(msDelay);
+	ModuleGSMDelaySetMs(0, msDelay);
 	moduleGSM.nextState = nextSate;
 	moduleGSM.currentState = DELAY;
 	Log(gLogData, eSubSystemSIM800L, eInfoLogging, "goes to DELAY");
 }
 
 static void ModuleGSMWaitForResponse(int msDelay, State nextSate) {
-	ModuleGSMDelaySetMs(msDelay);
+	ModuleGSMDelaySetMs(0, msDelay);
 	moduleGSM.nextState = nextSate;
 	moduleGSM.currentState = WAIT_FOR_RESPONSE;
 	Log(gLogData, eSubSystemSIM800L, eInfoLogging, "goes to WAIT_FOR_RESPONSE");
@@ -82,7 +82,7 @@ void ModuleGSMStateMachineProcess(void)
 	{
 		case DELAY:
 		case WAIT_FOR_RESPONSE:
-			if(ModuleGSMDelayCheckMs() != RESP_WAIT)
+			if(ModuleGSMDelayCheckMs(0) != RESP_WAIT)
 			{
 				moduleGSM.currentState = moduleGSM.nextState;
 				LogWithNum(gLogData, eSubSystemSIM800L, eInfoLogging, "goes to State: %d", moduleGSM.nextState);
@@ -210,6 +210,9 @@ void ModuleGSMStateMachineProcess(void)
 				}
 			} else if(smsToSend) {
 				ModuleGSMSetDelayToNextState(1000, SEND_SMS);
+			} else if(RESP_OK == ModuleGSMDelayCheckMs(1)) {
+				ModuleGSMDelaySetMs(1, 60000);
+				ModuleGSMSetDelayToNextState(20, CHECK_CREG);
 			}
 		break;
 		
@@ -444,32 +447,43 @@ void SendSMSContent(char *content)
 /**
 	Delay functions
 		void ModuleGSMDelayCancel(int msDelay);
-		void ModuleGSMDelaySetMs(void);
+		void ModuleGSMDelaySetMs(int, void);
 		void ModuleGSMDelayDecrementMs(void);
-		Response ModuleGSMDelayCheckMs(void);
+		Response ModuleGSMDelayCheckMs(int timer);
 */
 
-void ModuleGSMDelayCancel(int msDelay)
+void ModuleGSMDelayCancel(int timer, int msDelay)
 {
-	ModuleGSMDelayCounter = 0;
+	if(timer > 9) {
+		return;
+	}
+	ModuleGSMDelayCounter[timer] = 0;
 }
 
-void ModuleGSMDelaySetMs(int msDelay)
+void ModuleGSMDelaySetMs(int timer, int msDelay)
 {
-	ModuleGSMDelayCounter = msDelay;
+	if(timer > 9) {
+		return;
+	}
+	ModuleGSMDelayCounter[timer] = msDelay;
 }
 
 void ModuleGSMDelayDecrementMs(void)
 {
-	if (ModuleGSMDelayCounter != 0x00)
-  { 
-    ModuleGSMDelayCounter--;
-  }
+	int i;
+	for(i = 0; i < 10; i++) {
+		if (ModuleGSMDelayCounter[i] != 0x00) { 
+			ModuleGSMDelayCounter[i]--;
+		}
+	}
 }
 
-Response ModuleGSMDelayCheckMs(void)
+Response ModuleGSMDelayCheckMs(int timer)
 {
-	if(ModuleGSMDelayCounter == 0)
+	if(timer > 9) {
+		return RESP_ERROR;
+	}
+	if(ModuleGSMDelayCounter[timer] == 0)
 	{
 		return RESP_OK;
 	}

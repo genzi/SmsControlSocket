@@ -73,9 +73,9 @@ void SendCommandWithNum(char *command, int num);
 void SendCommandWithStr(char *command, char *str);
 void SendSMSContent(char *content);
 
-void ModuleGSMDelaySetMs(int msDelay);
+void ModuleGSMDelaySetMs(int timer, int msDelay);
 void ModuleGSMDelayDecrementMs(void);
-Response ModuleGSMDelayCheckMs(void);
+Response ModuleGSMDelayCheckMs(int timer);
 
 void ModuleGSMSMSSend(SMS *lSmsToSend);
 
