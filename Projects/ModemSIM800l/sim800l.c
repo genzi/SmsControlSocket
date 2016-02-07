@@ -15,18 +15,19 @@ static char ResponseBuffer[512];
 static SMS *smsReceived;
 static SMS *smsToSend;
 
-#define MODULE_OK 2000
-#define MODULE_RESET 500
-
 /**
 	Callback functions
 */
 
-__weak void ModuleGSMSMSStartedCallback(void) {
+__weak void ModuleGSMResetCallback(void) {
 	
 }
 
-__weak void ModuleGSMSMSConnectedToNetworkCallback(void) {
+__weak void ModuleGSMStartedCallback(void) {
+	
+}
+
+__weak void ModuleGSMConnectedToNetworkCallback(void) {
 	
 }
 
@@ -39,11 +40,6 @@ __weak void ModuleGSMSMSSendedCallback(Response response) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-
-static void StatusLEDBlinkRate(uint16_t rate){
-	TimersMngrSetReloadValue(0, rate);
-}
-
 
 static bool ModuleGSMResponseOK() {
 	return strstr(ResponseBuffer, "\r\nOK\r\n") ? true : false;
@@ -90,9 +86,9 @@ void ModuleGSMStateMachineProcess(void)
 		break;
 			
 		case RESETING:
-			StatusLEDBlinkRate(MODULE_RESET);
 			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "RESETING");
 			ModuleGSMReset();
+			ModuleGSMResetCallback();
 			ModuleGSMSetDelayToNextState(500, STARTING);
 		break;
 		
@@ -112,7 +108,7 @@ void ModuleGSMStateMachineProcess(void)
 			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
 				if(ModuleGSMResponseOK()) {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "AT_RESPONSE OK");
-					ModuleGSMSMSStartedCallback();
+					ModuleGSMStartedCallback();
 					ModuleGSMSetDelayToNextState(3000, CHECK_PIN);				
 				} else {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "AT_RESPONSE ERROR");
@@ -177,8 +173,7 @@ void ModuleGSMStateMachineProcess(void)
 				if(strstr(ResponseBuffer, "+CREG: 0,5") ||
 					 strstr(ResponseBuffer, "+CREG: 0,1")) {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Registered in network");
-					StatusLEDBlinkRate(MODULE_OK);
-					ModuleGSMSMSConnectedToNetworkCallback();
+					ModuleGSMConnectedToNetworkCallback();
 					ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, READY);				
 				} else if(strstr(ResponseBuffer, "+CREG: 0,2")) {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "searching network");
