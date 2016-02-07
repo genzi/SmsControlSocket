@@ -774,6 +774,11 @@
               <FileType>1</FileType>
               <FilePath>..\sim800l.c</FilePath>
             </File>
+            <File>
+              <FileName>app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1799,6 +1804,11 @@
               <FileName>sim800l.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\sim800l.c</FilePath>
+            </File>
+            <File>
+              <FileName>app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2955,6 +2965,11 @@
               <FileType>1</FileType>
               <FilePath>..\sim800l.c</FilePath>
             </File>
+            <File>
+              <FileName>app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3894,6 +3909,11 @@
               <FileName>sim800l.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\sim800l.c</FilePath>
+            </File>
+            <File>
+              <FileName>app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -5050,6 +5070,11 @@
               <FileType>1</FileType>
               <FilePath>..\sim800l.c</FilePath>
             </File>
+            <File>
+              <FileName>app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -5989,6 +6014,11 @@
               <FileName>sim800l.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\sim800l.c</FilePath>
+            </File>
+            <File>
+              <FileName>app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -6930,6 +6960,11 @@
               <FileType>1</FileType>
               <FilePath>..\sim800l.c</FilePath>
             </File>
+            <File>
+              <FileName>app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -7870,6 +7905,11 @@
               <FileType>1</FileType>
               <FilePath>..\sim800l.c</FilePath>
             </File>
+            <File>
+              <FileName>app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -8809,6 +8849,11 @@
               <FileName>sim800l.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\sim800l.c</FilePath>
+            </File>
+            <File>
+              <FileName>app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app.c</FilePath>
             </File>
           </Files>
         </Group>
