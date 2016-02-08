@@ -60,7 +60,7 @@ extern __IO uint32_t SysTickCounter;
 GPIO_InitTypeDef GPIO_InitStructure;
 static __IO uint32_t TimingDelay;
 static unsigned short int transmitFlag = 0;
-static float gTemperature;
+float gTemperature;
 
 /* Private function prototypes -----------------------------------------------*/
 void Delay(__IO uint32_t nTime);

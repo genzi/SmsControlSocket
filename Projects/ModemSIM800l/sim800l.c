@@ -488,6 +488,9 @@ Response ModuleGSMDelayCheckMs(int timer)
 }
 
 void ModuleGSMSMSSend(SMS *lSmsToSend) {
+	if(smsToSend != NULL) {
+		SMSDestroy(&smsToSend);
+	}
 	smsToSend = lSmsToSend;
 }
 

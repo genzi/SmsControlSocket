@@ -13,10 +13,19 @@ typedef struct {
 	char telNumber[13];
 	char message[161];
 } SMS;
+
+typedef struct {
+	char *password;
+	char *action;
+	char *variable;
+	char *value;
+} MsgContent;
 	 
 SMS *SMSCreate(void);
 void SMSDestroy(SMS **sms);
 bool SMSParse(SMS *sms, char *buffer);
+
+void SMSMessageParse(char *msg, MsgContent *msgContent);
 
 
 #ifdef __cplusplus

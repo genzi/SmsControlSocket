@@ -11,10 +11,10 @@ SMS *SMSCreate(void) {
 }
 
 void SMSDestroy(SMS **sms) {
-        if (*sms != NULL) {
-                free(*sms);
-                *sms = NULL;
-        }
+	if (*sms != NULL) {
+		free(*sms);
+		*sms = NULL;
+	}
 }
 
 bool SMSParse(SMS *sms, char *buffer) {
@@ -30,9 +30,18 @@ bool SMSParse(SMS *sms, char *buffer) {
 			pStrTok = strtok(NULL, "\r\n");
 			pStrTok = strtok(NULL, "\r\n");
 			strncpy(sms->message, pStrTok, 160);
+			sms->message[160] = '\0';
 			return true;
 		}
 	}
 	
 	return false;
+}
+
+void SMSMessageParse(char *msg, MsgContent *msgContent) {
+	
+	msgContent->password = strtok(msg, " ,.;:/");
+	msgContent->action = strtok(NULL, " ,.;:/");
+	msgContent->variable = strtok(NULL, " ,.;:/");
+	msgContent->value = strtok(NULL, " ,.;:/");
 }
