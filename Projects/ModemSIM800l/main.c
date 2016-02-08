@@ -99,9 +99,6 @@ void ReadTemperature(void *par)
   */
 int main(void)
 {
-	//TODO
-	//if sim800l is powered after main uP then never goes 
-	//to READY state
 	
 	struct sFirmwareVersion version;
 	struct Timer timerInit;

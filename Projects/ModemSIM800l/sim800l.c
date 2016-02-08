@@ -89,11 +89,12 @@ void ModuleGSMStateMachineProcess(void)
 			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "RESETING");
 			ModuleGSMReset();
 			ModuleGSMResetCallback();
-			ModuleGSMSetDelayToNextState(500, STARTING);
+			ModuleGSMSetDelayToNextState(1500, STARTING);
 		break;
 		
 		case STARTING:
 			Log(gLogData, eSubSystemSIM800L, eInfoLogging, "STARTING");
+			ClearRxBufferAndCounter();
 			ModuleGSMEnable();
 			ModuleGSMSetDelayToNextState(3000, AT);
 		break;
