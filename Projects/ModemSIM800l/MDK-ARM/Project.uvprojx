@@ -1037,6 +1037,21 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>temp_sensor</GroupName>
+          <Files>
+            <File>
+              <FileName>temp_sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.c</FilePath>
+            </File>
+            <File>
+              <FileName>temp_sensor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.h</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -2197,6 +2212,21 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>temp_sensor</GroupName>
+          <Files>
+            <File>
+              <FileName>temp_sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.c</FilePath>
+            </File>
+            <File>
+              <FileName>temp_sensor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.h</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -3139,6 +3169,21 @@
               <FileName>sms.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\sms\sms.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>temp_sensor</GroupName>
+          <Files>
+            <File>
+              <FileName>temp_sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.c</FilePath>
+            </File>
+            <File>
+              <FileName>temp_sensor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -4302,6 +4347,21 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>temp_sensor</GroupName>
+          <Files>
+            <File>
+              <FileName>temp_sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.c</FilePath>
+            </File>
+            <File>
+              <FileName>temp_sensor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.h</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -5244,6 +5304,21 @@
               <FileName>sms.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\sms\sms.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>temp_sensor</GroupName>
+          <Files>
+            <File>
+              <FileName>temp_sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.c</FilePath>
+            </File>
+            <File>
+              <FileName>temp_sensor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -6192,6 +6267,21 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>temp_sensor</GroupName>
+          <Files>
+            <File>
+              <FileName>temp_sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.c</FilePath>
+            </File>
+            <File>
+              <FileName>temp_sensor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.h</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -7134,6 +7224,21 @@
               <FileName>sms.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\sms\sms.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>temp_sensor</GroupName>
+          <Files>
+            <File>
+              <FileName>temp_sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.c</FilePath>
+            </File>
+            <File>
+              <FileName>temp_sensor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -8082,6 +8187,21 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>temp_sensor</GroupName>
+          <Files>
+            <File>
+              <FileName>temp_sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.c</FilePath>
+            </File>
+            <File>
+              <FileName>temp_sensor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.h</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -9024,6 +9144,21 @@
               <FileName>sms.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\sms\sms.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>temp_sensor</GroupName>
+          <Files>
+            <File>
+              <FileName>temp_sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.c</FilePath>
+            </File>
+            <File>
+              <FileName>temp_sensor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\temp_sensor\temp_sensor.h</FilePath>
             </File>
           </Files>
         </Group>

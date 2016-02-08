@@ -30,6 +30,7 @@
 #include "sim800l.h"
 #include "log\logging.h"
 #include "timers_mngr\timers_mngr.h"
+#include "temp_sensor\temp_sensor.h"
 #include <string.h>
 
 /** @addtogroup STM32F0xx_StdPeriph_Examples
@@ -59,6 +60,7 @@ extern __IO uint32_t SysTickCounter;
 GPIO_InitTypeDef GPIO_InitStructure;
 static __IO uint32_t TimingDelay;
 static unsigned short int transmitFlag = 0;
+static float gTemperature;
 
 /* Private function prototypes -----------------------------------------------*/
 void Delay(__IO uint32_t nTime);
@@ -81,6 +83,12 @@ void StatusLEDon(void *par)
 void StatusLEDoff(void *par)
 {
 	LED_Off(LED_BLUE);
+}
+
+void ReadTemperature(void *par)
+{
+	gTemperature = TemperatureSensorGetValueMiliCelsius() / 1000.0;
+	(void)gTemperature;
 }
 
 
@@ -108,7 +116,7 @@ int main(void)
 	LogSetOutputLevel(gLogData, eSubSystemSIM800L, eInfoLogging);
 	LogVersion(gLogData, &version);
 	
-	TimersMngrInit(2);
+	TimersMngrInit(3);
 	
 	timerInit.callback = StatusLEDon;
 	timerInit.reload = timerInit.counter = 500;
@@ -119,6 +127,11 @@ int main(void)
 	timerInit.reload = timerInit.counter = 100;
 	timerInit.repeated = false;
 	TimersMngrConfigTimer(1, timerInit);
+	
+	timerInit.callback = ReadTemperature;
+	timerInit.reload = timerInit.counter = 5000;
+	timerInit.repeated = true;
+	TimersMngrConfigTimer(2, timerInit);
   
 	if (SysTick_Config(SystemCoreClock / 1000))
   { 
@@ -140,11 +153,13 @@ int main(void)
 	
 	Log(gLogData, eSubSystemSYSTEM, eInfoLogging, "Hardware initialized");
 	
-	TimersMngrTimerStart(0);
+	TimersMngrTimerStart(0);	//status led
+	TimersMngrTimerStart(2);	//read temperature
+	
+	TemperatureSensorInit(-6.4);
 
   while (1)
   {
-
 		ModuleGSMMainProcess();
 		TimersMngrProcess();
     
