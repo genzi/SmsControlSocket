@@ -31,6 +31,7 @@
 #include "log\logging.h"
 #include "timers_mngr\timers_mngr.h"
 #include "temp_sensor\temp_sensor.h"
+#include "nv_config\nv_config.h"
 #include <string.h>
 
 /** @addtogroup STM32F0xx_StdPeriph_Examples
@@ -98,8 +99,7 @@ void ReadTemperature(void *par)
   * @retval None
   */
 int main(void)
-{
-	
+{	
 	struct sFirmwareVersion version;
 	struct Timer timerInit;
 		
@@ -153,8 +153,12 @@ int main(void)
 	TimersMngrTimerStart(0);	//status led
 	TimersMngrTimerStart(2);	//read temperature
 	
-	TemperatureSensorInit(-6.4);
-
+	if(NVConfigIsInitialised() == false) {
+		NVConfigSave(pFactoryConfig);
+	}
+	
+	TemperatureSensorInit(gNVConfig->temperatureCorrection);
+	
   while (1)
   {
 		ModuleGSMMainProcess();

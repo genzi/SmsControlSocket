@@ -1,5 +1,6 @@
 #include "sim800l.h"
 #include "timers_mngr\timers_mngr.h"
+#include "nv_config\nv_config.h"
 #include <ctype.h>
 
 extern float gTemperature;
@@ -33,7 +34,7 @@ void ModuleGSMSMSReceivedCallback(SMS *smsReceived) {
 	
 	SMSMessageParse(smsReceived->message, &content);
 	
-	if(strstr(content.password, "1111")) {
+	if(strstr(content.password, gNVConfig->password)) {
 		strcpy(smsToSend->telNumber, smsReceived->telNumber);
 		if(strstr(content.action, "set")) {
 			if(strstr(content.variable, "output")) {
