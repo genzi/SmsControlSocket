@@ -15,7 +15,7 @@ typedef struct {
 } SMS;
 
 typedef struct {
-	char *password;
+	char *pin;
 	char *action;
 	char *variable;
 	char *value;

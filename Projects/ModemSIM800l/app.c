@@ -25,6 +25,7 @@ void ModuleGSMSMSReceivedCallback(SMS *smsReceived) {
 	MsgContent content;
 	char *p = smsReceived->message;
 	SMS *smsToSend = SMSCreate();
+	Config newConfig;
 	
 	if(smsToSend == NULL) {
 		return;
@@ -34,17 +35,39 @@ void ModuleGSMSMSReceivedCallback(SMS *smsReceived) {
 	
 	SMSMessageParse(smsReceived->message, &content);
 	
-	if(strstr(content.password, gNVConfig->password)) {
+	if(strstr(content.pin, gNVConfig->pin)) {
 		strcpy(smsToSend->telNumber, smsReceived->telNumber);
 		if(strstr(content.action, "set")) {
 			if(strstr(content.variable, "output")) {
-				if(strstr(content.value, "high") || strstr(content.value, "1")) {
+				if(strstr(content.value, "high") || strstr(content.value, "1") || strstr(content.value, "on")) {
 					strcpy(smsToSend->message, "Output set to high");
 					GPIOC->BSRR |= GPIO_Pin_9;
+					memcpy(&newConfig, gNVConfig, sizeof(Config));
+					newConfig.outputActive = true;
+					NVConfigSave(&newConfig);					
 				} else {
 					strcpy(smsToSend->message, "Output set to low");
 					GPIOC->BRR |= GPIO_Pin_9;
+					memcpy(&newConfig, gNVConfig, sizeof(Config));
+					newConfig.outputActive = false;
+					NVConfigSave(&newConfig);
 				}
+			} else if(strstr(content.variable, "answer")) {
+				if(strstr(content.value, "yes") || strstr(content.value, "true")) {
+					strcpy(smsToSend->message, "Answers will be send");
+					memcpy(&newConfig, gNVConfig, sizeof(Config));
+					newConfig.sendAnswer = true;
+					NVConfigSave(&newConfig);					
+				} else {
+					strcpy(smsToSend->message, "Answers will not be send");
+					memcpy(&newConfig, gNVConfig, sizeof(Config));
+					newConfig.sendAnswer = false;
+					NVConfigSave(&newConfig);						
+				}				
+			} else if(strstr(content.variable, "pin")) {
+					memcpy(&newConfig, gNVConfig, sizeof(Config));
+					strncpy(newConfig.pin, content.value, 4);
+					NVConfigSave(&newConfig);				
 			} else {
 				strcpy(smsToSend->message, "Unknown set variable");
 			}		
@@ -58,7 +81,9 @@ void ModuleGSMSMSReceivedCallback(SMS *smsReceived) {
 			strcpy(smsToSend->message, "Unknown action");
 		}
 		
-		ModuleGSMSMSSend(smsToSend);
+		if(gNVConfig->sendAnswer == true) {
+			ModuleGSMSMSSend(smsToSend);
+		}
 	}
 	
 }

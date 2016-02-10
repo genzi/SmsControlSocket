@@ -13,8 +13,10 @@
 #define CONFIG_ADDR 0x0800FC00
 
 typedef struct {
-	char password[5];
+	char pin[5];
 	float temperatureCorrection;
+	bool sendAnswer;
+	bool outputActive;
 } Config;
 
 extern const Config *gNVConfig;

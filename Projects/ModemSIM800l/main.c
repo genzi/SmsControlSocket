@@ -157,6 +157,12 @@ int main(void)
 		NVConfigSave(pFactoryConfig);
 	}
 	
+	if(gNVConfig->outputActive == true) {
+		GPIOC->BSRR |= GPIO_Pin_9;
+	} else {
+		GPIOC->BRR |= GPIO_Pin_9;
+	}
+	
 	TemperatureSensorInit(gNVConfig->temperatureCorrection);
 	
   while (1)

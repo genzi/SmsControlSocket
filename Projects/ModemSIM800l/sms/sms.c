@@ -40,7 +40,7 @@ bool SMSParse(SMS *sms, char *buffer) {
 
 void SMSMessageParse(char *msg, MsgContent *msgContent) {
 	
-	msgContent->password = strtok(msg, " ,.;:/");
+	msgContent->pin = strtok(msg, " ,.;:/");
 	msgContent->action = strtok(NULL, " ,.;:/");
 	msgContent->variable = strtok(NULL, " ,.;:/");
 	msgContent->value = strtok(NULL, " ,.;:/");

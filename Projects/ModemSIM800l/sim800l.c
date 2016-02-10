@@ -80,6 +80,7 @@ void ModuleGSMStateMachineProcess(void)
 		case WAIT_FOR_RESPONSE:
 			if(ModuleGSMDelayCheckMs(0) != RESP_WAIT)
 			{
+				ClearRxBufferAndCounter();
 				moduleGSM.currentState = moduleGSM.nextState;
 				LogWithNum(gLogData, eSubSystemSIM800L, eInfoLogging, "goes to State: %d", moduleGSM.nextState);
 			}
@@ -236,7 +237,7 @@ void ModuleGSMStateMachineProcess(void)
 		break;
 			
 		case DELETE_ALL_SMS:
-			ModuleGSMSetDelayToNextState(DELAY_BTW_CMDS, READY);
+			ModuleGSMSetDelayToNextState(500, READY);
 			SendCommand("AT+CMGD=1,4\r\n");
 		break;
 		

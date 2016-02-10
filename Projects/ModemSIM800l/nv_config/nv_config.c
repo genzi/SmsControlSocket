@@ -2,7 +2,7 @@
 #include <string.h>
 
 const Config *gNVConfig = (Config *)CONFIG_ADDR;
-static const Config gFactoryConfig = {"1111", -6.4};
+static const Config gFactoryConfig = {"1111", -6.4, true, false};
 const Config *pFactoryConfig = &gFactoryConfig;
 
 static char __attribute__ ((aligned (4))) buffer[sizeof(Config)];
