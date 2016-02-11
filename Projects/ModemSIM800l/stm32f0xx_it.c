@@ -152,15 +152,47 @@ void USART1_IRQHandler(void)
     }
   }
 	
-	if(USART_GetITStatus(USART1, USART_ISR_ORE) != RESET) {
-		USART_ClearITPendingBit(USART1, USART_ISR_ORE);
+	if(USART_GetITStatus(USART1, USART_IT_PE) != RESET) {   
+		USART_ClearITPendingBit(USART1, USART_IT_PE);
 	}
-	if(USART_GetITStatus(USART1, USART_ISR_PE) != RESET) {
-		USART_ClearITPendingBit(USART1, USART_ISR_PE);
+	if(USART_GetITStatus(USART1, USART_IT_TC) != RESET) {   
+		USART_ClearITPendingBit(USART1, USART_IT_TC);
 	}
-	if(USART_GetITStatus(USART1, USART_ISR_FE) != RESET) {
-		USART_ClearITPendingBit(USART1, USART_ISR_FE);
+	if(USART_GetITStatus(USART1, USART_IT_LBD) != RESET) {   
+		USART_ClearITPendingBit(USART1, USART_IT_LBD);
 	}
+	if(USART_GetITStatus(USART1, USART_IT_ERR) != RESET) {   
+		USART_ClearITPendingBit(USART1, USART_IT_ERR);
+	}
+	if(USART_GetITStatus(USART1, USART_IT_ORE) != RESET) {   
+		USART_ClearITPendingBit(USART1, USART_IT_ORE);
+	}
+	if(USART_GetITStatus(USART1, USART_IT_NE) != RESET) {   
+		USART_ClearITPendingBit(USART1, USART_IT_NE);
+	}
+	if(USART_GetITStatus(USART1, USART_IT_FE) != RESET) {   
+		USART_ClearITPendingBit(USART1, USART_IT_FE);
+	}
+	
+	if(USART_GetFlagStatus(USART1, USART_FLAG_PE) != RESET) {
+		USART_ClearFlag(USART1, USART_FLAG_PE);
+	}	
+	if(USART_GetFlagStatus(USART1, USART_FLAG_TC) != RESET) {
+		USART_ClearFlag(USART1, USART_FLAG_TC);
+	}
+	if(USART_GetFlagStatus(USART1, USART_FLAG_LBD) != RESET) {
+		USART_ClearFlag(USART1, USART_FLAG_LBD);
+	}
+	if(USART_GetFlagStatus(USART1, USART_FLAG_ORE) != RESET) {
+		USART_ClearFlag(USART1, USART_FLAG_ORE);
+	}
+	if(USART_GetFlagStatus(USART1, USART_FLAG_NE) != RESET) {
+		USART_ClearFlag(USART1, USART_FLAG_NE);
+	}
+	if(USART_GetFlagStatus(USART1, USART_FLAG_FE) != RESET) {
+		USART_ClearFlag(USART1, USART_FLAG_FE);
+	}
+
 
 }
 
