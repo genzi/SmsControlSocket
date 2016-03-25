@@ -41,13 +41,13 @@ void ModuleGSMSMSReceivedCallback(SMS *smsReceived) {
 			if(strstr(content.variable, "output")) {
 				if(strstr(content.value, "high") || strstr(content.value, "1") || strstr(content.value, "on")) {
 					strcpy(smsToSend->message, "Output set to high");
-					GPIOC->BSRR |= GPIO_Pin_9;
+					GPIO_WriteBit(GPIOA, GPIO_Pin_4, (BitAction)1);
 					memcpy(&newConfig, gNVConfig, sizeof(Config));
 					newConfig.outputActive = true;
 					NVConfigSave(&newConfig);					
 				} else {
 					strcpy(smsToSend->message, "Output set to low");
-					GPIOC->BRR |= GPIO_Pin_9;
+					GPIO_WriteBit(GPIOA, GPIO_Pin_4, (BitAction)0);
 					memcpy(&newConfig, gNVConfig, sizeof(Config));
 					newConfig.outputActive = false;
 					NVConfigSave(&newConfig);

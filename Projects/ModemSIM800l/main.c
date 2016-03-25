@@ -54,8 +54,7 @@ extern __IO uint32_t SysTickCounter;
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define LED_BLUE GPIO_Pin_8
-#define LED_YELLOW GPIO_Pin_9
+
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 GPIO_InitTypeDef GPIO_InitStructure;
@@ -66,8 +65,6 @@ float gTemperature;
 /* Private function prototypes -----------------------------------------------*/
 void Delay(__IO uint32_t nTime);
 void LEDs_Init(void);
-void LED_On(uint16_t pin);
-void LED_Off(uint16_t pin);
 static void NVIC_Config(void);
 static void USART_Config(void);
 
@@ -77,13 +74,13 @@ void USART_Send(USART_TypeDef* USARTx, uint8_t size);
 
 void StatusLEDon(void *par)
 {
-	LED_On(LED_BLUE);
+	GPIO_WriteBit(GPIOA, GPIO_Pin_3, (BitAction)1);
 	TimersMngrTimerStart(1);
 }
 
 void StatusLEDoff(void *par)
 {
-	LED_Off(LED_BLUE);
+	GPIO_WriteBit(GPIOA, GPIO_Pin_3, (BitAction)0);
 }
 
 void ReadTemperature(void *par)
@@ -141,10 +138,9 @@ int main(void)
 	
 	LEDs_Init();
 	NVIC_Config();
-	USART_Config();
+//	USART_Config();
 	
-	LED_Off(LED_YELLOW);
-	LED_Off(LED_BLUE);
+	GPIO_WriteBit(GPIOA, GPIO_Pin_3, (BitAction)0);
 	
 	ModuleGSMInit();
 	
@@ -158,9 +154,9 @@ int main(void)
 	}
 	
 	if(gNVConfig->outputActive == true) {
-		GPIOC->BSRR |= GPIO_Pin_9;
+		GPIO_WriteBit(GPIOA, GPIO_Pin_4, (BitAction)1);
 	} else {
-		GPIOC->BRR |= GPIO_Pin_9;
+		GPIO_WriteBit(GPIOA, GPIO_Pin_4, (BitAction)0);
 	}
 	
 	TemperatureSensorInit(gNVConfig->temperatureCorrection);
@@ -215,35 +211,15 @@ void TimingDelay_Decrement(void)
 void LEDs_Init(void)
 {
   /* GPIOC Periph clock enable */
-  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOC, ENABLE);
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
 
   /* Configure PC10 and PC11 in output pushpull mode */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_4;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_Init(GPIOC, &GPIO_InitStructure);
-}
-
-/**
-  * @brief  LED On
-  * @param  None
-  * @retval None
-  */
-void LED_On(uint16_t pin)
-{
-	GPIOC->BSRR |= pin;
-}
-
-/**
-  * @brief  LED Off
-  * @param  None
-  * @retval None
-  */
-void LED_Off(uint16_t pin)
-{
-	GPIOC->BRR |= pin;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
 /**
