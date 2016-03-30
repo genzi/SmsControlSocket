@@ -380,19 +380,25 @@ void ModuleGSMInit(void) {
 		while(true){}	//TODO how to handle this error
 	}
 	
-  /* GPIOC Periph clock enable */
-  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOC, ENABLE);
+  /* GPIOA Periph clock enable */
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+  /* GPIOB Periph clock enable */
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
 
   /* Configure PC10 and PC11 in output pushpull mode */
-																//RESET				//DTR
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+																//RESET				
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_Init(GPIOC, &GPIO_InitStructure);
-	GPIO_SetBits(GPIOC, GPIO_Pin_6 | GPIO_Pin_7);
-
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+	GPIO_SetBits(GPIOA, GPIO_Pin_8);
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+	GPIO_SetBits(GPIOB, GPIO_Pin_0);
+	
 	moduleGSM.currentState = RESETING;
 	
 }
@@ -409,12 +415,12 @@ void ModuleGSMMainProcess() {
 
 void ModuleGSMReset(void)
 {
-	GPIO_ResetBits(GPIOC, GPIO_Pin_6);
+	GPIO_ResetBits(GPIOA, GPIO_Pin_8);
 }
 
 void ModuleGSMEnable(void)
 {
-	GPIO_SetBits(GPIOC, GPIO_Pin_6);
+	GPIO_SetBits(GPIOA, GPIO_Pin_8);
 }
 
 void SendCommand(char *command)

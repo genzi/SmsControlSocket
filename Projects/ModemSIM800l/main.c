@@ -138,7 +138,7 @@ int main(void)
 	
 	LEDs_Init();
 	NVIC_Config();
-//	USART_Config();
+	USART_Config();
 	
 	GPIO_WriteBit(GPIOA, GPIO_Pin_3, (BitAction)0);
 	
