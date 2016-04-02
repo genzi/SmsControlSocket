@@ -1,6 +1,7 @@
 #include "sim800l.h"
 #include "timers_mngr\timers_mngr.h"
 #include "nv_config\nv_config.h"
+#include "buttons_mngr\buttons_mngr.h"
 #include <ctype.h>
 
 extern float gTemperature;
@@ -89,6 +90,16 @@ void ModuleGSMSMSReceivedCallback(SMS *smsReceived) {
 }
 
 void ModuleGSMSMSSendedCallback(Response response) {
+	
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void ButtonShortPressedCallback(Button button) {
+	
+}
+
+void ButtonLongPressedCallback(Button button) {
 	
 }
 

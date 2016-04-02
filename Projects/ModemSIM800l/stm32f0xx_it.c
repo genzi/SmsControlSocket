@@ -32,6 +32,7 @@
 #include "sim800l.h"
 #include "timers_mngr\timers_mngr.h"
 #include "log\logging.h"
+#include "buttons_mngr\buttons_mngr.h"
 #include <string.h>
 
 /** @addtogroup STM32F0xx_StdPeriph_Examples
@@ -193,8 +194,35 @@ void USART1_IRQHandler(void)
 		USART_ClearFlag(USART1, USART_FLAG_FE);
 	}
 
-
 }
+
+/**
+  * @brief  This function handles External lines 4 to 15 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI4_15_IRQHandler(void)
+{
+	static uint32_t pressedTimestamp;
+	
+	if(EXTI_GetITStatus(EXTI_Line7) != RESET)
+  {
+		if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_7) == SET) {
+			pressedTimestamp = *ButtonsMngrSysTimestamp;
+		} else {
+			if((*ButtonsMngrSysTimestamp - pressedTimestamp) >= LONG_PRESS) {
+				ButtonLongPressedCallback(USER_BTN);
+			} else {
+				ButtonShortPressedCallback(USER_BTN);
+			}
+		}
+    
+    /* Clear the EXTI line 7 pending bit */
+    EXTI_ClearITPendingBit(EXTI_Line7);
+  }
+   
+}
+
 
 /******************************************************************************/
 /*                 STM32F0xx Peripherals Interrupt Handlers                   */
