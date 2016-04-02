@@ -1062,6 +1062,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>buttons_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>buttons_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\buttons_mngr\buttons_mngr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -2247,6 +2257,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>buttons_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>buttons_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\buttons_mngr\buttons_mngr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -3214,6 +3234,16 @@
               <FileName>nv_config.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\nv_config\nv_config.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>buttons_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>buttons_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\buttons_mngr\buttons_mngr.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -4402,6 +4432,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>buttons_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>buttons_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\buttons_mngr\buttons_mngr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -5369,6 +5409,16 @@
               <FileName>nv_config.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\nv_config\nv_config.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>buttons_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>buttons_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\buttons_mngr\buttons_mngr.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -6342,6 +6392,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>buttons_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>buttons_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\buttons_mngr\buttons_mngr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -7309,6 +7369,16 @@
               <FileName>nv_config.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\nv_config\nv_config.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>buttons_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>buttons_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\buttons_mngr\buttons_mngr.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -8282,6 +8352,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>buttons_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>buttons_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\buttons_mngr\buttons_mngr.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -9249,6 +9329,16 @@
               <FileName>nv_config.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\nv_config\nv_config.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>buttons_mngr</GroupName>
+          <Files>
+            <File>
+              <FileName>buttons_mngr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\buttons_mngr\buttons_mngr.c</FilePath>
             </File>
           </Files>
         </Group>
