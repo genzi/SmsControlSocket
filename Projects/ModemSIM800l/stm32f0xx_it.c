@@ -207,7 +207,7 @@ void EXTI4_15_IRQHandler(void)
 	
 	if(EXTI_GetITStatus(EXTI_Line7) != RESET)
   {
-		if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_7) == SET) {
+		if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_7) == RESET) {
 			pressedTimestamp = *ButtonsMngrSysTimestamp;
 		} else {
 			if((*ButtonsMngrSysTimestamp - pressedTimestamp) >= LONG_PRESS) {

@@ -32,6 +32,7 @@
 #include "timers_mngr\timers_mngr.h"
 #include "temp_sensor\temp_sensor.h"
 #include "nv_config\nv_config.h"
+#include "buttons_mngr\buttons_mngr.h"
 #include <string.h>
 
 /** @addtogroup STM32F0xx_StdPeriph_Examples
@@ -160,6 +161,7 @@ int main(void)
 	}
 	
 	TemperatureSensorInit(gNVConfig->temperatureCorrection);
+	ButtonsMngrInit(&SysTickCounter);
 	
   while (1)
   {

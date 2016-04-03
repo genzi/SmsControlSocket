@@ -17,8 +17,8 @@ extern __IO uint32_t *ButtonsMngrSysTimestamp;
 	 
 void ButtonsMngrInit(volatile uint32_t *SysTimestamp);
 
-extern __weak void ButtonShortPressedCallback(Button button);
-extern __weak void ButtonLongPressedCallback(Button button);
+void ButtonShortPressedCallback(Button button);
+void ButtonLongPressedCallback(Button button);
 	
 #ifdef __cplusplus
 }
