@@ -4,10 +4,13 @@
 #include "buttons_mngr\buttons_mngr.h"
 #include <ctype.h>
 
-extern float gTemperature;
-
 #define MODULE_OK 2000
 #define MODULE_RESET 500
+#define MODULE_CONFIG_MODE 250
+
+extern float gTemperature;
+
+bool configMode = false;
 
 static void StatusLEDBlinkRate(uint16_t rate){
 	TimersMngrSetReloadValue(0, rate);
@@ -66,9 +69,14 @@ void ModuleGSMSMSReceivedCallback(SMS *smsReceived) {
 					NVConfigSave(&newConfig);						
 				}				
 			} else if(strstr(content.variable, "pin")) {
+				if(true == configMode) {
+					configMode = false;
+					StatusLEDBlinkRate(MODULE_OK);
 					memcpy(&newConfig, gNVConfig, sizeof(Config));
 					strncpy(newConfig.pin, content.value, 4);
-					NVConfigSave(&newConfig);				
+					NVConfigSave(&newConfig);
+					strcpy(smsToSend->message, "pin has been changed");
+				}
 			} else {
 				strcpy(smsToSend->message, "Unknown set variable");
 			}		
@@ -100,6 +108,12 @@ void ButtonShortPressedCallback(Button button) {
 }
 
 void ButtonLongPressedCallback(Button button) {
-	
+	if(false == configMode) {
+		configMode = true;
+		StatusLEDBlinkRate(MODULE_CONFIG_MODE);
+	} else {
+		configMode = false;
+		StatusLEDBlinkRate(MODULE_OK);		
+	}
 }
 
