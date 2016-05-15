@@ -212,6 +212,31 @@ void ModuleGSMStateMachineProcess(void)
 				ModuleGSMSetDelayToNextState(20, CHECK_CREG);
 			}
 		break;
+			
+		case CHECK_NEW_SMS:
+			LogWithNum(gLogData, eSubSystemSIM800L, eInfoLogging, "Send AT+CMGL=\"REC UNREAD\"", smsNumber);
+			ModuleGSMWaitForResponse(1000, CHECK_NEW_SMS_RESPONSE);
+			SendCommand("Send AT+CMGL=\"REC UNREAD\"\r\n");			
+		break;
+		
+		case CHECK_NEW_SMS_RESPONSE:
+			Log(gLogData, eSubSystemSIM800L, eErrorLogging, "Not implemented CHECK_NEW_SMS_RESPONSE");
+			ModuleGSMSetDelayToNextState(100, READY);
+//			if(Queue_read(gQueueSimUsart, ResponseBuffer) != -1) {
+//				Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Message readed");
+//				
+//				if(SMSParse(smsReceived, ResponseBuffer)) {
+//					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Message parsed");
+//					ModuleGSMSMSReceivedCallback(smsReceived);
+//				} else {
+//					Log(gLogData, eSubSystemSIM800L, eErrorLogging, "Message parse err");
+//				}
+//				ModuleGSMSetDelayToNextState(100, DELETE_ALL_SMS);
+//			} else {
+//				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "Message read err");
+//				ModuleGSMSetDelayToNextState(100, READY);
+//			}			
+		break;
 		
 		case READ_NEW_SMS:
 			LogWithNum(gLogData, eSubSystemSIM800L, eInfoLogging, "Send AT+CMGR=%d", smsNumber);
