@@ -105,13 +105,27 @@ void WatchDogFeed(void *ptr) {
 
 void StatusLEDon(void *par)
 {
-	GPIO_WriteBit(GPIOA, GPIO_Pin_3, (BitAction)1);
+	BitAction bit;
+	
+	if(gNVConfig->outputActive) {
+		bit = Bit_RESET;
+	} else {
+		bit = Bit_SET;
+	}
+	GPIO_WriteBit(GPIOA, GPIO_Pin_3, bit);
 	TimersMngrTimerStart(1);
 }
 
 void StatusLEDoff(void *par)
 {
-	GPIO_WriteBit(GPIOA, GPIO_Pin_3, (BitAction)0);
+	BitAction bit;
+	
+	if(gNVConfig->outputActive) {
+		bit = Bit_SET;
+	} else {
+		bit = Bit_RESET;
+	}	
+	GPIO_WriteBit(GPIOA, GPIO_Pin_3, bit);
 }
 
 void ReadTemperature(void *par)
