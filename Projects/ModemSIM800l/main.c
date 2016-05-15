@@ -62,6 +62,7 @@ GPIO_InitTypeDef GPIO_InitStructure;
 static __IO uint32_t TimingDelay;
 static unsigned short int transmitFlag = 0;
 float gTemperature;
+__IO uint32_t LsiFreq = 40000;
 
 /* Private function prototypes -----------------------------------------------*/
 void Delay(__IO uint32_t nTime);
@@ -72,6 +73,35 @@ static void USART_Config(void);
 void USART_Send(USART_TypeDef* USARTx, uint8_t size);
 
 /* Private functions ---------------------------------------------------------*/
+
+void WatchDogInit(void) {
+	/* IWDG timeout equal to 250 ms (the timeout may varies due to LSI frequency
+     dispersion) */
+  /* Enable write access to IWDG_PR and IWDG_RLR registers */
+  IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
+
+  /* IWDG counter clock: LSI/32 */
+  IWDG_SetPrescaler(IWDG_Prescaler_32);
+
+  /* Set counter reload value to obtain 250ms IWDG TimeOut.
+     Counter Reload Value = 250ms/IWDG counter clock period
+                          = 250ms / (LSI/32)
+                          = 0.25s / (LsiFreq/32)
+                          = LsiFreq/(32 * 4)
+                          = LsiFreq/128
+   */
+  IWDG_SetReload(LsiFreq/128);
+
+  /* Reload IWDG counter */
+  IWDG_ReloadCounter();
+
+  /* Enable IWDG (the LSI oscillator will be enabled by hardware) */
+  IWDG_Enable();
+}
+
+void WatchDogFeed(void *ptr) {
+	IWDG_ReloadCounter();
+}
 
 void StatusLEDon(void *par)
 {
@@ -111,7 +141,7 @@ int main(void)
 	LogSetOutputLevel(gLogData, eSubSystemSIM800L, eInfoLogging);
 	LogVersion(gLogData, &version);
 	
-	TimersMngrInit(3);
+	TimersMngrInit(4);
 	
 	timerInit.callback = StatusLEDon;
 	timerInit.reload = timerInit.counter = 500;
@@ -127,6 +157,11 @@ int main(void)
 	timerInit.reload = timerInit.counter = 5000;
 	timerInit.repeated = true;
 	TimersMngrConfigTimer(2, timerInit);
+	
+	timerInit.callback = WatchDogFeed;
+	timerInit.reload = timerInit.counter = 200;
+	timerInit.repeated = true;
+	TimersMngrConfigTimer(3, timerInit);
   
 	if (SysTick_Config(SystemCoreClock / 1000))
   { 
@@ -149,6 +184,7 @@ int main(void)
 	
 	TimersMngrTimerStart(0);	//status led
 	TimersMngrTimerStart(2);	//read temperature
+	TimersMngrTimerStart(3);	//watch dog feed
 	
 	if(NVConfigIsInitialised() == false) {
 		NVConfigSave(pFactoryConfig);
@@ -162,6 +198,8 @@ int main(void)
 	
 	TemperatureSensorInit(gNVConfig->temperatureCorrection);
 	ButtonsMngrInit(&SysTickCounter);
+	
+	WatchDogInit();
 	
   while (1)
   {
