@@ -83,6 +83,12 @@ void ModuleGSMSMSReceivedCallback(SMS *smsReceived) {
 		} else if(strstr(content.action, "get")) {
 			if(strstr(content.variable, "temperature")) {
 				sprintf(smsToSend->message, "Actual temperature: %.1f", gTemperature);
+			} else if(strstr(content.variable, "output")) {
+				if(gNVConfig->outputActive) {
+					strcpy(smsToSend->message, "Output state high");
+				} else {
+					strcpy(smsToSend->message, "Output state low");
+				}
 			} else {
 				strcpy(smsToSend->message, "Unknown get variable");
 			}
