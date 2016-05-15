@@ -96,7 +96,7 @@ void ModuleGSMSMSReceivedCallback(SMS *smsReceived) {
 			strcpy(smsToSend->message, "Unknown action");
 		}
 		
-		if(gNVConfig->sendAnswer == true) {
+		if((gNVConfig->sendAnswer == true) || strstr(content.action, "get")) {
 			ModuleGSMSMSSend(smsToSend);
 		}
 	}
