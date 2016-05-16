@@ -81,7 +81,7 @@ void WatchDogInit(void) {
   IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
 
   /* IWDG counter clock: LSI/32 */
-  IWDG_SetPrescaler(IWDG_Prescaler_32);
+  IWDG_SetPrescaler(IWDG_Prescaler_128);
 
   /* Set counter reload value to obtain 250ms IWDG TimeOut.
      Counter Reload Value = 250ms/IWDG counter clock period
