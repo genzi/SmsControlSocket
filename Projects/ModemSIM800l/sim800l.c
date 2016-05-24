@@ -209,7 +209,12 @@ void ModuleGSMStateMachineProcess(void)
 				ModuleGSMSetDelayToNextState(1000, SEND_SMS);
 			} else if(RESP_OK == ModuleGSMDelayCheckMs(1)) {
 				ModuleGSMDelaySetMs(1, 60000);
+				ModuleGSMDelaySetMs(2, 15000);
 				ModuleGSMSetDelayToNextState(20, CHECK_CREG);
+			} else if(RESP_OK == ModuleGSMDelayCheckMs(2)) {
+				ModuleGSMDelayCancel(2);
+				smsNumber = 1;
+				ModuleGSMSetDelayToNextState(20, READ_NEW_SMS);
 			}
 		break;
 			
@@ -252,7 +257,7 @@ void ModuleGSMStateMachineProcess(void)
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Message parsed");
 					ModuleGSMSMSReceivedCallback(smsReceived);
 				} else {
-					Log(gLogData, eSubSystemSIM800L, eErrorLogging, "Message parse err");
+					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "No waiting message");
 				}
 				ModuleGSMSetDelayToNextState(100, DELETE_ALL_SMS);
 			} else {
@@ -474,18 +479,18 @@ void SendSMSContent(char *content)
 
 /**
 	Delay functions
-		void ModuleGSMDelayCancel(int msDelay);
+		void ModuleGSMDelayCancel(int timer);
 		void ModuleGSMDelaySetMs(int, void);
 		void ModuleGSMDelayDecrementMs(void);
 		Response ModuleGSMDelayCheckMs(int timer);
 */
 
-void ModuleGSMDelayCancel(int timer, int msDelay)
+void ModuleGSMDelayCancel(int timer)
 {
 	if(timer > 9) {
 		return;
 	}
-	ModuleGSMDelayCounter[timer] = 0;
+	ModuleGSMDelayCounter[timer] = -1;
 }
 
 void ModuleGSMDelaySetMs(int timer, int msDelay)
@@ -500,7 +505,7 @@ void ModuleGSMDelayDecrementMs(void)
 {
 	int i;
 	for(i = 0; i < 10; i++) {
-		if (ModuleGSMDelayCounter[i] != 0x00) { 
+		if (ModuleGSMDelayCounter[i] > 0x00) { 
 			ModuleGSMDelayCounter[i]--;
 		}
 	}

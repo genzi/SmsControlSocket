@@ -76,6 +76,7 @@ void SendSMSContent(char *content);
 
 void ModuleGSMDelaySetMs(int timer, int msDelay);
 void ModuleGSMDelayDecrementMs(void);
+void ModuleGSMDelayCancel(int timer);
 Response ModuleGSMDelayCheckMs(int timer);
 
 void ModuleGSMSMSSend(SMS *lSmsToSend);
