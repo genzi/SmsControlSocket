@@ -256,10 +256,12 @@ void ModuleGSMStateMachineProcess(void)
 				if(SMSParse(smsReceived, ResponseBuffer)) {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "Message parsed");
 					ModuleGSMSMSReceivedCallback(smsReceived);
+					ModuleGSMSetDelayToNextState(100, DELETE_ALL_SMS);
 				} else {
 					Log(gLogData, eSubSystemSIM800L, eInfoLogging, "No waiting message");
+					ModuleGSMSetDelayToNextState(100, READY);
 				}
-				ModuleGSMSetDelayToNextState(100, DELETE_ALL_SMS);
+				
 			} else {
 				Log(gLogData, eSubSystemSIM800L, eErrorLogging, "Message read err");
 				ModuleGSMSetDelayToNextState(100, READY);

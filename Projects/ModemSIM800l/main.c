@@ -173,7 +173,7 @@ int main(void)
 	TimersMngrConfigTimer(2, timerInit);
 	
 	timerInit.callback = WatchDogFeed;
-	timerInit.reload = timerInit.counter = 200;
+	timerInit.reload = timerInit.counter = 100;
 	timerInit.repeated = true;
 	TimersMngrConfigTimer(3, timerInit);
   
